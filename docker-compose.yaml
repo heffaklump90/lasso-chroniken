@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+  database:
+    image: mysql/mysql-server
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'lasso-chroniken'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'rootpw'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - lasso:/var/lib/mysql
+
+volumes:
+  lasso:
