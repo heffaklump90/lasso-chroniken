@@ -8,3 +8,6 @@ vich_uploader:
             delete_on_remove: true
             delete_on_update: true
             inject_on_load: false
+            namer:
+                service: Vich\UploaderBundle\Naming\SmartUniqueNamer
+

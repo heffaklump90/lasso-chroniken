@@ -23,7 +23,6 @@ class ImageCrudController extends AbstractCrudController
         $imageFile = TextareaField::new('file')->setFormType(VichImageType::class);
         $image = ImageField::new('fileName')->setBasePath('/upload/img');
 
-
         if($pageName == Crud::PAGE_INDEX || $pageName == Crud::PAGE_DETAIL){
             $fields[] = $image;
         }

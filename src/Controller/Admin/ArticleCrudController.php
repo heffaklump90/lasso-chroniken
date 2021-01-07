@@ -26,7 +26,7 @@ class ArticleCrudController extends AbstractCrudController
         return [
             IdField::new('id')->hideOnForm(),
             TextField::new('title'),
-            SlugField::new('slug')->setTargetFieldName('slug'),
+            SlugField::new('slug')->setTargetFieldName('slug')->setFormTypeOption('disabled', 'disabled'),
             TextEditorField::new('content'),
             AssociationField::new('author'),
             DateTimeField::new('publishAt')->setFormType(DateTimeType::class),
