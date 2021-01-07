@@ -18,6 +18,6 @@
 ###> PHPStorm
 /.idea/*
 
-/public/uploads/*
+/public/upload/*
 
 /symfony

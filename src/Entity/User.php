@@ -6,13 +6,17 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Self_;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
+ * @Vich\Uploadable
  */
 class User implements UserInterface
 {
@@ -59,10 +63,46 @@ class User implements UserInterface
      */
     private $lastName;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $userImage;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $userImageSize;
+
+    /**
+     * @Vich\UploadableField(mapping="images", fileNameProperty="userImage", size="userImageSize")
+     */
+    private $userImageFile;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
+
+
+
+    public function getUserImageFile(): ?File
+    {
+        return $this->userImageFile;
+    }
+
+    public function setUserImageFile(?File $userImageFile): self
+    {
+        $this->userImageFile = $userImageFile;
+        if($userImageFile){
+            $this->updatedAt = new \DateTime();
+        }
+        return $this;
+    }
 
     public function __construct()
     {
         $this->articles = new ArrayCollection();
+        $this->updatedAt = new \DateTime();
     }
 
     public function __toString(): string
@@ -228,4 +268,42 @@ class User implements UserInterface
     {
         return $this->__toString();
     }
+
+    public function getUserImage(): ?string
+    {
+        return $this->userImage;
+    }
+
+    public function setUserImage(?string $userImage): self
+    {
+        $this->userImage = $userImage;
+
+        return $this;
+    }
+
+    public function getUserImageSize(): ?int
+    {
+        return $this->userImageSize;
+    }
+
+    public function setUserImageSize(?int $userImageSize): self
+    {
+        $this->userImageSize = $userImageSize;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+
 }

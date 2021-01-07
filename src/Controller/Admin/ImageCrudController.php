@@ -3,34 +3,26 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Image;
-use App\Entity\User;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Vich\UploaderBundle\Form\Type\VichImageType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
-class UserCrudController extends AbstractCrudController
+class ImageCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return User::class;
+        return Image::class;
     }
+
 
     public function configureFields(string $pageName): iterable
     {
-        $imageFile = TextareaField::new('userImageFile')->setFormType(VichImageType::class);
-        $image = ImageField::new('userImage')->setBasePath('/upload/img');
-        $fields = [
-            TextField::new('email'),
-            TextField::new('firstName'),
-            TextField::new('lastName'),
-            CollectionField::new('roles'),
-            BooleanField::new('isVerified'),
-        ];
+        $imageFile = TextareaField::new('file')->setFormType(VichImageType::class);
+        $image = ImageField::new('fileName')->setBasePath('/upload/img');
+
 
         if($pageName == Crud::PAGE_INDEX || $pageName == Crud::PAGE_DETAIL){
             $fields[] = $image;
@@ -39,6 +31,9 @@ class UserCrudController extends AbstractCrudController
             $fields[] = $imageFile;
         }
 
+        $fields[] = TextField::new('description');
+
         return $fields;
     }
+
 }

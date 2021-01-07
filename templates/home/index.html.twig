@@ -10,6 +10,10 @@
     {% for article in articles %}
         <h2>{{ article.title | raw }}</h2>
         <p>{{ article.content | raw }}</p>
+        {% for img in article.images %}
+            <img width="320px" src="{{ vich_uploader_asset(img, 'file') }}" alt="{{ img.fileName }}" />
+            <p>{{ img.description }}</p>
+        {% endfor %}
     {% endfor %}
 </div>
 {% endblock %}
