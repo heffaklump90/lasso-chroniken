@@ -3,8 +3,12 @@
 {% block title %}Hello ArticleController!{% endblock %}
 
 {% block body %}
-<h1>{{ article.title }}</h1>
-<div class="article-content">
-    {{ article.content | raw }}
-</div>
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ article.title }}</h1>
+            <div class="article-content">
+                {{ article.content | raw }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
