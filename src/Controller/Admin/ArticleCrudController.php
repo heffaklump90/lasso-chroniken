@@ -4,14 +4,17 @@ namespace App\Controller\Admin;
 
 use App\Entity\Article;
 use App\Field\CKEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class ArticleCrudController extends AbstractCrudController
@@ -27,10 +30,15 @@ class ArticleCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('title'),
             SlugField::new('slug')->setTargetFieldName('slug')->setFormTypeOption('disabled', 'disabled'),
-            TextEditorField::new('content'),
+            TextareaField::new('content')->setFormType(CKEditorType::class),
             AssociationField::new('author'),
             DateTimeField::new('publishAt')->setFormType(DateTimeType::class),
             AssociationField::new('images'),
         ];
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->addFormTheme('@FOSCKEditor/Form/ckeditor_widget.html.twig');
     }
 }

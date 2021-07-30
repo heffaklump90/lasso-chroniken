@@ -30,7 +30,7 @@ class AppFixtures extends Fixture
         $author->setFirstName('Björn');
         $author->setLastName('Andersson');
         $author->setIsVerified(true);
-        $author->setRoles(['ROLE_AUTHOR']);
+        $author->setRoles(['ROLE_AUTHOR', 'ROLE_ADMIN']);
         $author->setPassword($this->passwordEncoder->encodePassword( $user, 'password'));
 
         $manager->persist($author);
