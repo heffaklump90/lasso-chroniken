@@ -42,6 +42,11 @@ class StravaAthlete
      */
     private $refreshToken;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $tokenExpiryTime;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -103,6 +108,18 @@ class StravaAthlete
     public function setRefreshToken(?string $refreshToken): self
     {
         $this->refreshToken = $refreshToken;
+
+        return $this;
+    }
+
+    public function getTokenExpiryTime(): ?\DateTimeInterface
+    {
+        return $this->tokenExpiryTime;
+    }
+
+    public function setTokenExpiryTime(?\DateTimeInterface $tokenExpiryTime): self
+    {
+        $this->tokenExpiryTime = $tokenExpiryTime;
 
         return $this;
     }

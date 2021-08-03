@@ -90,6 +90,7 @@ class StravaAPIController extends AbstractController
         $stravaData = json_decode($response->getContent());
         $stravaAthlete->setAuthToken($stravaData->access_token);
         $stravaAthlete->setRefreshToken($stravaData->refresh_token);
+        $stravaAthlete->setTokenExpiryTime( new \DateTime("@" . $stravaData->expires_at) );
 
         $em->persist($stravaAthlete);
         $em->flush();
