@@ -30,7 +30,7 @@ class HomeController extends AbstractController
         $latestActivities = $this->stravaAthleteRepository->findLatestActivityForAll();
 
         return $this->render('home/index.html.twig', [
-            'activities' => $latestActivities,
+            'athletes' => $latestActivities,
             'articles' => $articles,
         ]);
     }
