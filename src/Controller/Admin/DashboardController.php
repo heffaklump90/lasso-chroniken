@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Article;
+use App\Entity\StravaAthlete;
 use App\Entity\User;
 use App\Entity\Image;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -34,5 +35,6 @@ class DashboardController extends AbstractDashboardController
             ->setPermission('ROLE_ADMIN');
         yield MenuItem::linkToCrud('Article', 'fas fa-list', Article::class);
         yield MenuItem::linkToCrud('Image', 'fas fa-list', Image::class);
+        yield MenuItem::linkToCrud('StravaAthlete', 'fas fa-list', StravaAthlete::class);
     }
 }

@@ -25,9 +25,19 @@
             <p>denn es ist immer da. Und es verdient es, in einem mäßigen 4:45-5:15:erschnitt gelaufen zu werden.</p>
         </div>
         <div class="col-md-4">
+            <h2>Die neuesten Artikeln</h2>
+            <p>
             {% for article in articles %}
                 <a href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a><br/>
             {% endfor %}
+            </p>
+            <h2>Die neuesten Strava-Einträge</h2>
+            <p data-controller="strava"></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 offset-8">
+
         </div>
     </div>
 

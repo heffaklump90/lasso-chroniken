@@ -4,6 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    strava.client_id: '%env(CLIENT_ID)%'
+    strava.client_secret: '%env(CLIENT_SECRET)%'
+    strava.authorization_code: '%env(AUTHORIZATION_CODE)%'
+
 
 services:
     # default configuration for services in *this* file
@@ -36,3 +40,7 @@ services:
                 name: 'doctrine.orm.entity_listener'
                 event: 'prePersist'
                 entity: 'App\Entity\Article'
+
+    App\Listener\RedirectExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
