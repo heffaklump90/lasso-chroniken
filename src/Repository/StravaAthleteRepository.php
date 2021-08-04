@@ -34,7 +34,7 @@ class StravaAthleteRepository extends ServiceEntityRepository
             if($athlete->getTokenExpiryTime() < new \DateTime()){
                 $responseData = StravaAPICalls::refreshAuthToken( $athlete );
                 $athlete->setAuthToken($responseData->access_token);
-                $athlete->setTokenExpiryTime("@" . $responseData->expires_at);
+                $athlete->setTokenExpiryTime( new \DateTime("@" . $responseData->expires_at));
                 $athlete->setRefreshToken($responseData->refresh_token);
                 $this->getEntityManager()->persist($athlete);
                 $this->getEntityManager()->flush();
