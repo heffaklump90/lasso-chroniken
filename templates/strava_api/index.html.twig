@@ -1,1 +1,29 @@
-<p>Access granted token expires at {{ athlete.tokenExpiryTime | date }} but will be automatically refreshed</p>
+{%  extends 'base.html.twig' %}
+
+{% block body %}
+
+
+    <h1>Test strava api calls</h1>
+    <p>
+        <a class="btn btn-primary" href="{{ path('strava_refresh_auth_token') }}">get refresh token</a>
+    </p>
+    <p>
+        <a class="btn btn-primary" href="{{ path('strava_athlete_data') }}">get athlete data</a>
+    </p>
+    <p>
+        <a class="btn btn-primary" href="{{ path('strava_activities_data') }}">get activities data</a>
+    </p>
+    <p>
+        <a class="btn btn-primary" href="{{ path('strava_latest_activity_data') }}">get latest activity data</a>
+    </p>
+    <p>
+        <a class="btn btn-primary" href="{{ path('strava_authorize_athlete') }}">authorize user</a>
+    </p>
+    {% if data is defined and app.environment == 'dev' %}
+        {% if app.environment == 'dev' %}
+            {{ dump(data) }}
+        {% else %}
+            data
+        {% endif %}
+    {% endif %}
+{% endblock %}

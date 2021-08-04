@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\StravaAthleteRepository;
+use App\Shared\StravaAPICalls;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
@@ -13,9 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StravaAPIController extends AbstractController
 {
-    const STRAVA_AUTH_URI = "https://www.strava.com/oauth/authorize";
-    const STRAVA_SESSION_LOGIN_URI = "https://www.strava.com/session";
-
     private $logger;
     private StravaAthleteRepository $stravaAthleteRepository;
 
@@ -26,50 +24,6 @@ class StravaAPIController extends AbstractController
     }
 
     /**
-     * @Route("/authorize", name="strava_authorize")
-     */
-    public function index( ): Response
-    {
-        $client = HttpClient::create( );
-        $response = $client->request('GET', self::STRAVA_AUTH_URI, [
-            'query' => [
-                'client_id' => 68910,
-                'response_type' => 'code',
-                'redirect_uri' => 'https://localhost/exchange_token',
-                'approval_prompt' => 'force',
-                'scope' => 'read',
-            ],
-        ]);
-
-        return $this->render('strava_api/index.html.twig', [
-            'status' => $response->getStatusCode(),
-            'curl_response' => $response->getContent(),
-        ]);
-    }
-
-    /**
-     * @Route("/session", name="strava_login_session")
-     */
-    public function session(Request $request): Response
-    {
-        $client = HttpClient::create();
-        $queryString = $request->getQueryString();
-        /*$response = $client->request('POST', self::STRAVA_SESSION_LOGIN_URI, [
-            'query' => [
-                'authenticity_token' => $request->getQueryString() getQuery('authenticity_token'),
-                'email' => $request->getQuery('email'),
-                'password' => $request->getQuery('password'),
-                'plan' => $request->getQuery('plan'),
-                'utf8' => $request->getQuery('utf8')
-
-            ]
-        ]);*/
-        return $this->render('strava_api/index.html.twig', [
-            'curl_response' => $response,
-        ]);
-    }
-
-    /**
      * @Route("/exchange_token", name="strava_exchange_token")
      */
     public function exchangeToken(Request $request, RequestStack $stack): Response
@@ -77,17 +31,11 @@ class StravaAPIController extends AbstractController
         $session = $stack->getSession();
         $stravaAthlete = $this->stravaAthleteRepository->find($session->get('current_strava_athlete'));
         $stravaAthlete->setAuthorizationCode($request->get('code'));
+
         $em = $this->getDoctrine()->getManager();
-        $client = HttpClient::create();
 
-        $response = $client->request('POST', 'https://www.strava.com/oauth/token', ['query' => [
-            'client_id' => $stravaAthlete->getClientId(),
-            'client_secret' => $stravaAthlete->getClientSecret(),
-            'code' => $stravaAthlete->getAuthorizationCode(),
-            'grant_type' => 'authorization_code',
-        ]]);
+        $stravaData = StravaAPICalls::getAuthCode( $stravaAthlete );
 
-        $stravaData = json_decode($response->getContent());
         $stravaAthlete->setAuthToken($stravaData->access_token);
         $stravaAthlete->setRefreshToken($stravaData->refresh_token);
         $stravaAthlete->setTokenExpiryTime( new \DateTime("@" . $stravaData->expires_at) );
@@ -95,8 +43,73 @@ class StravaAPIController extends AbstractController
         $em->persist($stravaAthlete);
         $em->flush();
 
-        return $this->render('strava_api/index.html.twig', [
+        return $this->render('strava_api/exchange_token.html.twig', [
             'athlete' => $stravaAthlete,
         ]);
+    }
+
+    /**
+     * @Route("/test_api", name="strava_test_api")
+     */
+    public function index(): Response
+    {
+        return $this->render('strava_api/index.html.twig');
+    }
+
+    /**
+     * @Route("/strava-refresh-token", name="strava_refresh_auth_token")
+     */
+    public function refreshToken(): Response
+    {
+        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
+        $data = StravaAPICalls::refreshAuthToken($athlete);
+        return $this->render('strava_api/index.html.twig', [
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * @Route("/strava-athlete-data", name="strava_athlete_data")
+     */
+    public function athlete(): Response
+    {
+        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
+        $data = StravaAPICalls::getAthleteData($athlete);
+        return $this->render('strava_api/index.html.twig', [
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * @Route("/strava-activities", name="strava_activities_data")
+     */
+    public function activities(): Response
+    {
+        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
+        $data = StravaAPICalls::getActivities($athlete);
+        return $this->render('strava_api/index.html.twig', [
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * @Route("/latest-strava-activity", name="strava_latest_activity_data")
+     */
+    public function latestActivity(): Response
+    {
+        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
+        $data = StravaAPICalls::getLatestActivity($athlete);
+        return $this->render('strava_api/index.html.twig', [
+            'data' => $data[0],
+        ]);
+
+    }
+
+    /**
+     * @Route("/strava-authorize-athlete", name="strava_authorize_athlete")
+     */
+    public function authorizeAthlete(): Response
+    {
+        return $this->render('strava_api/index.html.twig');
     }
 }

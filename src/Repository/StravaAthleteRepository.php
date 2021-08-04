@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\StravaAthlete;
+use App\Shared\StravaAPICalls;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,8 +18,7 @@ use Symfony\Component\HttpClient\HttpClient;
  */
 class StravaAthleteRepository extends ServiceEntityRepository
 {
-    const REFRESH_URL = "https://www.strava.com/api/v3/oauth/token";
-    const ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, StravaAthlete::class);
@@ -32,13 +32,7 @@ class StravaAthleteRepository extends ServiceEntityRepository
         foreach($athletes as $athlete){
             //refresh token?
             if($athlete->getTokenExpiryTime() < new \DateTime()){
-                $stravaResponse = $httpClient->request('GET', self::REFRESH_URL,['query' => [
-                    'client_id' => $athlete->getClientId(),
-                    'client_secret' => $athlete->getClientSecret(),
-                    'grant_type' => 'refresh_token',
-                    'refresh_token' => $athlete->getRefreshToken()
-                ]]);
-                $responseData = json_decode($stravaResponse->getContent());
+                $responseData = StravaAPICalls::refreshAuthToken( $athlete );
                 $athlete->setAuthToken($responseData->access_token);
                 $athlete->setTokenExpiryTime("@" . $responseData->expires_at);
                 $athlete->setRefreshToken($responseData->refresh_token);
@@ -48,11 +42,7 @@ class StravaAthleteRepository extends ServiceEntityRepository
             if(!$athlete->getAuthToken()){
                 throw new \Exception("No auth token for athlete");
             }
-            //get the activities
-            $stravaResponse = $httpClient->request('GET', self::ACTIVITIES_URL, [
-                'auth_bearer' => $athlete->getAuthToken(),
-            ]);
-            $response[] = json_decode($stravaResponse->getContent());
+            $response[] = StravaAPICalls::getActivities( $athlete );
         }
         return $response;
     }
