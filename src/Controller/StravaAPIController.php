@@ -43,6 +43,19 @@ class StravaAPIController extends AbstractController
         $em->persist($stravaAthlete);
         $em->flush();
 
+        $athleteData = StravaAPICalls::getAthleteData($stravaAthlete);
+        $stravaAthlete->setName($athleteData->firstname);
+
+        $em->persist($stravaAthlete);
+        $em->flush();
+
+        $stravaActivityData = StravaAPICalls::getLatestActivity($stravaAthlete);
+        $stravaAthlete->setLatestActivityId($stravaActivityData->id);
+        $stravaAthlete->setLatestActivityName($stravaActivityData->name);
+
+        $em->persist($stravaAthlete);
+        $em->flush();
+
         return $this->render('strava_api/exchange_token.html.twig', [
             'athlete' => $stravaAthlete,
         ]);
@@ -62,7 +75,7 @@ class StravaAPIController extends AbstractController
     public function refreshToken(): Response
     {
         $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
-        $data = StravaAPICalls::refreshAuthToken($athlete);
+        $data = StravaAPICalls::refreshAuthToken($athlete, $this->getDoctrine()->getManager());
         return $this->render('strava_api/index.html.twig', [
             'data' => $data,
         ]);
@@ -100,7 +113,7 @@ class StravaAPIController extends AbstractController
         $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
         $data = StravaAPICalls::getLatestActivity($athlete);
         return $this->render('strava_api/index.html.twig', [
-            'data' => $data[0],
+            'data' => $data,
         ]);
 
     }

@@ -18,7 +18,7 @@ class StravaAthlete
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", unique=true)
      */
     private $clientId;
 
@@ -46,6 +46,21 @@ class StravaAthlete
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $tokenExpiryTime;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $name;
+
+    /**
+     * @ORM\Column(type="bigint", nullable=true)
+     */
+    private $latestActivityId;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $latestActivityName;
 
     public function getId(): ?int
     {
@@ -120,6 +135,42 @@ class StravaAthlete
     public function setTokenExpiryTime(?\DateTimeInterface $tokenExpiryTime): self
     {
         $this->tokenExpiryTime = $tokenExpiryTime;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getLatestActivityId(): ?int
+    {
+        return $this->latestActivityId;
+    }
+
+    public function setLatestActivityId(?int $latestActivityId): self
+    {
+        $this->latestActivityId = $latestActivityId;
+
+        return $this;
+    }
+
+    public function getLatestActivityName(): ?string
+    {
+        return $this->latestActivityName;
+    }
+
+    public function setLatestActivityName(?string $latestActivityName): self
+    {
+        $this->latestActivityName = $latestActivityName;
 
         return $this;
     }

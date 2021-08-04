@@ -3,6 +3,7 @@
 namespace App\Shared;
 
 use App\Entity\StravaAthlete;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -39,7 +40,7 @@ class StravaAPICalls
         return json_decode( $response->getContent() );
     }
 
-    public static function refreshAuthToken(StravaAthlete $stravaAthlete)
+    public static function refreshAuthToken(StravaAthlete $stravaAthlete, EntityManager $entityManager)
     {
         $response = self::initHttpClient()->request('POST', self::REFRESH_URL,['query' => [
                 'client_id' => $stravaAthlete->getClientId(),
@@ -47,8 +48,13 @@ class StravaAPICalls
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $stravaAthlete->getRefreshToken()
             ]]);
-
-        return json_decode($response->getContent());
+        $responseData = json_decode($response->getContent());
+        $stravaAthlete->setAuthToken($responseData->access_token);
+        $stravaAthlete->setTokenExpiryTime( new \DateTime("@" . $responseData->expires_at));
+        $stravaAthlete->setRefreshToken($responseData->refresh_token);
+        $entityManager->persist($stravaAthlete);
+        $entityManager->flush();
+        return $responseData;
     }
 
     public static function getActivities(StravaAthlete $stravaAthlete)
@@ -69,7 +75,7 @@ class StravaAPICalls
                 ]
             ]
         );
-        return json_decode($response->getContent());
+        return json_decode($response->getContent())[0];
     }
 
     public static function getAthleteData(StravaAthlete $stravaAthlete)

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\ArticleRepository;
 use App\Repository\StravaAthleteRepository;
+use App\Shared\StravaAPICalls;
 use http\Client\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,10 +28,20 @@ class HomeController extends AbstractController
     {
         $articles = $this->articleRepo->findAll();
 
-        $latestActivities = $this->stravaAthleteRepository->findLatestActivityForAll();
+        $athletes = $this->stravaAthleteRepository->findAll();
+        foreach($athletes as $athlete){
+            $latestActivity = StravaAPICalls::getLatestActivity($athlete);
+            $athlete->setLatestActivityName($latestActivity->name);
+            $athlete->setLatestActivityId($latestActivity->id);
+            $athleteData = StravaAPICalls::getAthleteData($athlete);
+            $athlete->setName($athleteData->firstname);
+            $this->getDoctrine()->getManager()->persist($athlete);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
 
         return $this->render('home/index.html.twig', [
-            'athletes' => $latestActivities,
+            'athletes' => $athletes,
             'articles' => $articles,
         ]);
     }

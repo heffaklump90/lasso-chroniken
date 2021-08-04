@@ -32,12 +32,16 @@
             {% endfor %}
             </p>
             <h2>Die neuesten Strava-Einträge</h2>
-            {% for athlete in athletes %}
-                <a href="https://www.strava.com/activities/{{ athlete[0].id }}"><h3>{{ athlete[0].name }} - {{ athlete[0].id }}</h3></a>
-            {% endfor %}
+            <p>
+                <ul>
+                {% for athlete in athletes %}
+                    <li><a href="https://www.strava.com/activities/{{ athlete.latestActivityId }}">{{ athlete.name }}: {{ athlete.latestActivityName }}</a></li>
+                {% endfor %}
+                </ul>
+            </p>
         </div>
     </div>
-    <div class="row">
+    <div class="row">[0
         <div class="col-md-4 offset-8">
 
         </div>

@@ -33,6 +33,12 @@ class StravaAthleteCrudController extends AbstractCrudController
         return [
             NumberField::new('clientId'),
             TextField::new('clientSecret')->onlyOnForms(),
+            TextField::new('name')
+                ->setFormTypeOption('disabled', true),
+            NumberField::new('latestActivityId')->onlyOnForms()
+                ->setFormTypeOption('disabled', true),
+            TextField::new('latestActivityName')->onlyOnForms()
+                ->setFormTypeOption('disabled', true),
             TextField::new('authorizationCode')->onlyOnForms()
                 ->setFormTypeOption('disabled', true),
             TextField::new('refreshToken')->onlyOnForms()
