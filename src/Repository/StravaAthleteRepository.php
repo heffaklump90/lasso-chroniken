@@ -32,7 +32,7 @@ class StravaAthleteRepository extends ServiceEntityRepository
         foreach($athletes as $athlete){
             //refresh token?
             if($athlete->getTokenExpiryTime() < new \DateTime()){
-                $stravaResponse = $httpClient->request(GET, self::REFRESH_URL,['query' => [
+                $stravaResponse = $httpClient->request('GET', self::REFRESH_URL,['query' => [
                     'client_id' => $athlete->getClientId(),
                     'client_secret' => $athlete->getClientSecret(),
                     'grant_type' => 'refresh_token',
