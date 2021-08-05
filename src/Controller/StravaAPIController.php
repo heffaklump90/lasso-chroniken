@@ -74,8 +74,12 @@ class StravaAPIController extends AbstractController
      */
     public function refreshToken(): Response
     {
-        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
-        $data = StravaAPICalls::refreshAuthToken($athlete, $this->getDoctrine()->getManager());
+        $athletes = $this->stravaAthleteRepository->findAll();
+        $data = array();
+
+        foreach($athletes as $athlete){
+            $data[] = StravaAPICalls::refreshAuthToken($athlete, $this->getDoctrine()->getManager());
+        }
         return $this->render('strava_api/index.html.twig', [
             'data' => $data,
         ]);
@@ -87,7 +91,7 @@ class StravaAPIController extends AbstractController
     public function athlete(): Response
     {
         $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
-        $data = StravaAPICalls::getAthleteData($athlete);
+        $data = StravaAPICalls::getAthleteData($athlete, $this->getDoctrine()->getManager());
         return $this->render('strava_api/index.html.twig', [
             'data' => $data,
         ]);

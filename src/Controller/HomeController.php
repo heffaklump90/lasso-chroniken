@@ -5,11 +5,9 @@ namespace App\Controller;
 use App\Repository\ArticleRepository;
 use App\Repository\StravaAthleteRepository;
 use App\Shared\StravaAPICalls;
-use http\Client\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HomeController extends AbstractController
 {
@@ -30,15 +28,17 @@ class HomeController extends AbstractController
 
         $athletes = $this->stravaAthleteRepository->findAll();
         foreach($athletes as $athlete){
+            if($athlete->getTokenExpiryTime() < new \DateTime('now')){
+                StravaAPICalls::refreshAuthToken($athlete, $this->getDoctrine()->getManager());
+            }
             $latestActivity = StravaAPICalls::getLatestActivity($athlete);
             $athlete->setLatestActivityName($latestActivity->name);
             $athlete->setLatestActivityId($latestActivity->id);
-            $athleteData = StravaAPICalls::getAthleteData($athlete);
+            $athleteData = StravaAPICalls::getAthleteData($athlete, $this->getDoctrine()->getManager());
             $athlete->setName($athleteData->firstname);
             $this->getDoctrine()->getManager()->persist($athlete);
             $this->getDoctrine()->getManager()->flush();
         }
-
 
         return $this->render('home/index.html.twig', [
             'athletes' => $athletes,

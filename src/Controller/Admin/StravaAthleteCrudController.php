@@ -47,6 +47,10 @@ class StravaAthleteCrudController extends AbstractCrudController
                 ->setFormTypeOption('disabled', true),
             DateTimeField::new('tokenExpiryTime')->onlyOnForms()
                 ->setFormTypeOption('disabled', true),
+            TextField::new('profile')->onlyOnForms()
+                ->setFormTypeOption('disabled', true),
+            TextField::new('profileMedium')->onlyOnForms()
+                ->setFormTypeOption('disabled', true),
         ];
     }
 

@@ -35,7 +35,7 @@
             <p>
                 <ul>
                 {% for athlete in athletes %}
-                    <li><a href="https://www.strava.com/activities/{{ athlete.latestActivityId }}">{{ athlete.name }}: {{ athlete.latestActivityName }}</a></li>
+                    <li><a href="https://www.strava.com/activities/{{ athlete.latestActivityId }}"><img src="{{ athlete.profileMedium }}">{{ athlete.name }}: {{ athlete.latestActivityName }}</a></li>
                 {% endfor %}
                 </ul>
             </p>

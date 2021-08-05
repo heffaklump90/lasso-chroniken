@@ -62,6 +62,16 @@ class StravaAthlete
      */
     private $latestActivityName;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $profileMedium;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $profile;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -171,6 +181,30 @@ class StravaAthlete
     public function setLatestActivityName(?string $latestActivityName): self
     {
         $this->latestActivityName = $latestActivityName;
+
+        return $this;
+    }
+
+    public function getProfileMedium(): ?string
+    {
+        return $this->profileMedium;
+    }
+
+    public function setProfileMedium(?string $profileMedium): self
+    {
+        $this->profileMedium = $profileMedium;
+
+        return $this;
+    }
+
+    public function getProfile(): ?string
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?string $profile): self
+    {
+        $this->profile = $profile;
 
         return $this;
     }
