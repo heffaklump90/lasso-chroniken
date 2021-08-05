@@ -3,44 +3,44 @@
 {% block title %}Under Construction{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-md-8">
-            <h1>Nicht für das Leben üben wir...</h1>
-            <h2>...für die Disziplin</h2>
-            <p>Wer auch jemals Motivationsprobleme hatte, am Wochenende in der frühen Morgensonne (oder Morgenschwärze im Winter)
-                einen Langlauf zu absolvieren, versteht uns. In der Gruppe geht es einfacher. Eine kleine Prise Gruppendruck hilft
-                ungemein um aus den Bettfedern zu kommen. Also, Treffpunkt UTB (Under the Bridge) um 6:30 Uhr. B there.</p>
-            <h2>...für die anderen</h2>
-            <p>weil auch wenn Du selbst jeden Samstag um 5:45 Uhr wie gestochen aus dem Bett hüpft um deine 25-30km hinter dich zu
-                bringen - nicht jeder hat Deine Willensstärke oder Motivation. Den anderen kannst Du helfen.</p>
-            <h2>...für die Gespräche</h2>
-            <p>Gute 2 Stunden um die wirklich wichtigen Themen zu eruieren, ohne von den lieben Kindern, Partnern, wohl meinenden
-                Schwiegereltern oder anderen nicht-Läufern abgeblockt oder unterbrochen zu werden. Wie das Tapern aushalten die Woche vorm
-                Wettkampf? TWL oder doch 10x400? Müssen die gelaufene Gesamtmeter bei längeren Intervallen grösser werden? Und die
-                Rennberichte. Die Rennberichte!</p>
-            <h2>...für die Gemeinschaft</h2>
-            <p>weil laufen kann jeder, aber zusammen laufen und die Unterschiede akzeptieren ohne sie ändern zu müssen - oder gar wollen - , ist
-                ein Tugend</p>
-            <h2>...für das Lasso</h2>
-            <p>denn es ist immer da. Und es verdient es, in einem mäßigen 4:45-5:15:erschnitt gelaufen zu werden.</p>
-        </div>
-        <div class="col-md-4">
-            <h2>Die neuesten Artikeln</h2>
-            <p>
-            {% for article in articles %}
-                <a href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a><br/>
+<div class="row">
+    <div class="col-md-4">
+        <h2>Die neuesten Artikeln</h2>
+        <p>
+        {% for article in articles %}
+            <a href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a><br/>
+        {% endfor %}
+        </p>
+        <h2>Die neuesten Strava-Einträge</h2>
+        <p>
+            <ul>
+            {% for athlete in athletes %}
+                <li><a href="https://www.strava.com/activities/{{ athlete.latestActivityId }}"><img src="{{ athlete.profileMedium }}">{{ athlete.name }}: {{ athlete.latestActivityName }}</a></li>
             {% endfor %}
-            </p>
-            <h2>Die neuesten Strava-Einträge</h2>
-            <p>
-                <ul>
-                {% for athlete in athletes %}
-                    <li><a href="https://www.strava.com/activities/{{ athlete.latestActivityId }}"><img src="{{ athlete.profileMedium }}">{{ athlete.name }}: {{ athlete.latestActivityName }}</a></li>
-                {% endfor %}
-                </ul>
-            </p>
-        </div>
+            </ul>
+        </p>
     </div>
+    <div class="col-md-8">
+        <h1>Nicht für das Leben üben wir...</h1>
+        <h2>...für die Disziplin</h2>
+        <p>Wer auch jemals Motivationsprobleme hatte, am Wochenende in der frühen Morgensonne (oder Morgenschwärze im Winter)
+            einen Langlauf zu absolvieren, versteht uns. In der Gruppe geht es einfacher. Eine kleine Prise Gruppendruck hilft
+            ungemein um aus den Bettfedern zu kommen. Also, Treffpunkt UTB (Under the Bridge) um 6:30 Uhr. B there.</p>
+        <h2>...für die anderen</h2>
+        <p>weil auch wenn Du selbst jeden Samstag um 5:45 Uhr wie gestochen aus dem Bett hüpft um deine 25-30km hinter dich zu
+            bringen - nicht jeder hat Deine Willensstärke oder Motivation. Den anderen kannst Du helfen.</p>
+        <h2>...für die Gespräche</h2>
+        <p>Gute 2 Stunden um die wirklich wichtigen Themen zu eruieren, ohne von den lieben Kindern, Partnern, wohl meinenden
+            Schwiegereltern oder anderen nicht-Läufern abgeblockt oder unterbrochen zu werden. Wie das Tapern aushalten die Woche vorm
+            Wettkampf? TWL oder doch 10x400? Müssen die gelaufene Gesamtmeter bei längeren Intervallen grösser werden? Und die
+            Rennberichte. Die Rennberichte!</p>
+        <h2>...für die Gemeinschaft</h2>
+        <p>weil laufen kann jeder, aber zusammen laufen und die Unterschiede akzeptieren ohne sie ändern zu müssen - oder gar wollen - , ist
+            ein Tugend</p>
+        <h2>...für das Lasso</h2>
+        <p>denn es ist immer da. Und es verdient es, in einem mäßigen 4:45-5:15:erschnitt gelaufen zu werden.</p>
+    </div>
+</div>
 
 
 {% endblock %}
