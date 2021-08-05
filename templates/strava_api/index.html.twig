@@ -5,9 +5,6 @@
 
     <h1>Test strava api calls</h1>
     <p>
-        <a class="btn btn-primary" href="{{ path('strava_refresh_auth_token') }}">get refresh token</a>
-    </p>
-    <p>
         <a class="btn btn-primary" href="{{ path('strava_athlete_data') }}">get athlete data</a>
     </p>
     <p>
@@ -15,9 +12,6 @@
     </p>
     <p>
         <a class="btn btn-primary" href="{{ path('strava_latest_activity_data') }}">get latest activity data</a>
-    </p>
-    <p>
-        <a class="btn btn-primary" href="{{ path('strava_authorize_athlete') }}">authorize user</a>
     </p>
     {% if data is defined and app.environment == 'dev' %}
         {% if app.environment == 'dev' %}
