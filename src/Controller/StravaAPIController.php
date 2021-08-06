@@ -33,6 +33,8 @@ class StravaAPIController extends AbstractController
         $stravaAthlete->setAuthorizationCode($request->get('code'));
 
         $em = $this->getDoctrine()->getManager();
+        $em->persist($stravaAthlete);
+        $em->flush();
 
         $stravaData = StravaAPICalls::getAuthCode( $stravaAthlete );
 

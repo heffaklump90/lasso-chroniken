@@ -35,4 +35,9 @@ class ImageCrudController extends AbstractCrudController
         return $fields;
     }
 
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->addFormTheme('@VichUploader/Form/fields.html.twig');
+    }
 }

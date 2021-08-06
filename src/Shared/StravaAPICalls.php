@@ -29,7 +29,7 @@ class StravaAPICalls
     public static function getAuthCode(StravaAthlete $stravaAthlete)
     {
         self::initHttpClient();
-        $response = self::$httpClient->request('POST', self::STRAVA_GET_AUTH_TOKEN_URI, ['query' => [
+        $response = self::$httpClient->request('POST', self::REFRESH_URL, ['query' => [
             'client_id' => $stravaAthlete->getClientId(),
             'client_secret' => $stravaAthlete->getClientSecret(),
             'code' => $stravaAthlete->getAuthorizationCode(),

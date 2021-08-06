@@ -41,4 +41,6 @@ class UserCrudController extends AbstractCrudController
 
         return $fields;
     }
+
+
 }

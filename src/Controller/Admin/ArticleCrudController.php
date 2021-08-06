@@ -32,7 +32,7 @@ class ArticleCrudController extends AbstractCrudController
             SlugField::new('slug')->setTargetFieldName('slug')->setFormTypeOption('disabled', 'disabled'),
             TextareaField::new('content')->setFormType(CKEditorType::class),
             AssociationField::new('author'),
-            DateTimeField::new('publishAt')->setFormType(DateTimeType::class),
+            DateTimeField::new('publishAt'),
             AssociationField::new('images'),
         ];
     }
