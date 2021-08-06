@@ -92,7 +92,7 @@ class StravaAPIController extends AbstractController
      */
     public function athlete(): Response
     {
-        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
+        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 69071]);
         $data = StravaAPICalls::getAthleteData($athlete, $this->getDoctrine()->getManager());
         return $this->render('strava_api/index.html.twig', [
             'data' => $data,
@@ -104,7 +104,7 @@ class StravaAPIController extends AbstractController
      */
     public function activities(): Response
     {
-        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
+        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 69071]);
         $data = StravaAPICalls::getActivities($athlete);
         return $this->render('strava_api/index.html.twig', [
             'data' => $data,
@@ -116,7 +116,7 @@ class StravaAPIController extends AbstractController
      */
     public function latestActivity(): Response
     {
-        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 68910]);
+        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 69071]);
         $data = StravaAPICalls::getLatestActivity($athlete);
         return $this->render('strava_api/index.html.twig', [
             'data' => $data,
