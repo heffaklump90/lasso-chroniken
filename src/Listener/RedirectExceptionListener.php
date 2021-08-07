@@ -3,9 +3,7 @@
 namespace App\Listener;
 
 use App\Exception\RedirectException;
-use PhpParser\Node\Expr\Instanceof_;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Contracts\EventDispatcher\Event;
 
 class RedirectExceptionListener
 {

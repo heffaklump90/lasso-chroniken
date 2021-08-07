@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Repository\StravaAthleteRepository;
-use App\Shared\StravaAPICalls;
+use App\Service\StravaDataPersistence;
+use App\Service\StravaAPICalls;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,13 +17,21 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StravaAPIController extends AbstractController
 {
+
     private $logger;
     private StravaAthleteRepository $stravaAthleteRepository;
+    private StravaDataPersistence $stravaDataPersistence;
+    private StravaAPICalls $stravaAPICalls;
 
-    public function __construct(LoggerInterface $logger, StravaAthleteRepository $stravaAthleteRepository)
+    public function __construct(LoggerInterface $logger,
+                                StravaAthleteRepository $stravaAthleteRepository,
+                                StravaDataPersistence $dataPersistence,
+                                StravaAPICalls $stravaAPICalls)
     {
         $this->logger = $logger;
         $this->stravaAthleteRepository = $stravaAthleteRepository;
+        $this->stravaDataPersistence = $dataPersistence;
+        $this->stravaAPICalls = $stravaAPICalls;
     }
 
     /**
@@ -36,39 +47,58 @@ class StravaAPIController extends AbstractController
         $em->persist($stravaAthlete);
         $em->flush();
 
-        $stravaData = StravaAPICalls::getAuthCode( $stravaAthlete );
+        $stravaData = $this->stravaAPICalls->getAuthCode( $stravaAthlete );
+        $this->stravaDataPersistence->saveAuthData($stravaAthlete, $stravaData);
 
-        $stravaAthlete->setAuthToken($stravaData->access_token);
-        $stravaAthlete->setRefreshToken($stravaData->refresh_token);
-        $stravaAthlete->setTokenExpiryTime( new \DateTime("@" . $stravaData->expires_at) );
+        $athleteData = $this->stravaAPICalls->getAthleteData( $stravaAthlete );
+        $this->stravaDataPersistence->saveAthleteData(  $stravaAthlete, $athleteData );
 
-        $em->persist($stravaAthlete);
-        $em->flush();
-
-        $athleteData = StravaAPICalls::getAthleteData($stravaAthlete);
-        $stravaAthlete->setName($athleteData->firstname);
-
-        $em->persist($stravaAthlete);
-        $em->flush();
-
-        $stravaActivityData = StravaAPICalls::getLatestActivity($stravaAthlete);
-        $stravaAthlete->setLatestActivityId($stravaActivityData->id);
-        $stravaAthlete->setLatestActivityName($stravaActivityData->name);
-
-        $em->persist($stravaAthlete);
-        $em->flush();
+        $stravaActivityData = $this->stravaAPICalls->getLatestActivity( $stravaAthlete );
+        $this->stravaDataPersistence->saveLatestActivityData( $stravaAthlete, $stravaActivityData );
 
         return $this->render('strava_api/exchange_token.html.twig', [
             'athlete' => $stravaAthlete,
         ]);
     }
 
+
     /**
-     * @Route("/test_api", name="strava_test_api")
+     * @Route("/test-api", name="strava_test_api")
+     * @IsGranted("ROLE_ADMIN")
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return $this->render('strava_api/index.html.twig');
+        $athletes = $this->stravaAthleteRepository->findAll();
+        $choices = array();
+        foreach($athletes as $athlete){
+            $choices[$athlete->getName()] = $athlete->getClientId();
+        }
+        $form = $this->createFormBuilder()
+            ->add('clientId', ChoiceType::class, [
+                'choices' => $choices,
+            ])
+            ->add('refreshAuthToken', SubmitType::class)
+            ->add('getActivities', SubmitType::class)
+            ->add('getLatestActivity', SubmitType::class)
+            ->add('getAthleteData', SubmitType::class)
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        $stravaData = array();
+
+        if($form->isSubmitted() && $form->isValid()){
+            $data = $form->getData();
+            $apiCallName = $form->getClickedButton()->getName();
+            $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => $data['clientId']]);
+            $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
+        }
+
+        return $this->render('strava_api/index.html.twig', [
+            'form' => $form->createView(),
+            'stravaData' => $stravaData,
+            'athletes' => $athletes,
+        ]);
     }
 
     /**
@@ -80,55 +110,19 @@ class StravaAPIController extends AbstractController
         $data = array();
 
         foreach($athletes as $athlete){
-            $data[] = StravaAPICalls::refreshAuthToken($athlete, $this->getDoctrine()->getManager());
+            $data[] = $this->stravaAPICalls->refreshAuthToken($athlete);
+            $this->stravaDataPersistence->saveRefreshTokenData($athlete, end($data));
         }
         return $this->render('strava_api/index.html.twig', [
+            'athletes' => $athletes,
             'data' => $data,
         ]);
     }
 
-    /**
-     * @Route("/strava-athlete-data", name="strava_athlete_data")
-     */
-    public function athlete(): Response
-    {
-        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 69071]);
-        $data = StravaAPICalls::getAthleteData($athlete, $this->getDoctrine()->getManager());
-        return $this->render('strava_api/index.html.twig', [
-            'data' => $data,
-        ]);
-    }
 
-    /**
-     * @Route("/strava-activities", name="strava_activities_data")
-     */
-    public function activities(): Response
-    {
-        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 69071]);
-        $data = StravaAPICalls::getActivities($athlete);
-        return $this->render('strava_api/index.html.twig', [
-            'data' => $data,
-        ]);
-    }
 
-    /**
-     * @Route("/latest-strava-activity", name="strava_latest_activity_data")
-     */
-    public function latestActivity(): Response
-    {
-        $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => 69071]);
-        $data = StravaAPICalls::getLatestActivity($athlete);
-        return $this->render('strava_api/index.html.twig', [
-            'data' => $data,
-        ]);
 
-    }
 
-    /**
-     * @Route("/strava-authorize-athlete", name="strava_authorize_athlete")
-     */
-    public function authorizeAthlete(): Response
-    {
-        return $this->render('strava_api/index.html.twig');
-    }
+
+
 }

@@ -10,15 +10,11 @@ import { Controller } from 'stimulus';
  * Delete this file or adapt it for your use!
  */
 export default class extends Controller {
-    connect() {
-        let xhttp = new XMLHttpRequest();
-        let _URL = new URL("https://www.strava.com/oauth/authorize");
-        _URL.searchParams.set('client_id', 68910);
-        _URL.searchParams.set('redirect_uri', 'https://localhost:8000');
-        _URL.searchParams.set('response_type', 'code');
-        xhttp.open("GET", _URL.toString(), false);
-        let response = xhttp.send();
-        this.element.content = response;
-    }
+    static targets = [ "clientId" ]
 
+    chooseAthlete(event){
+        console.log('clientId: '.concat(this.clientIdTarget.value) );
+        console.log(document.location.href);
+        //document.location.href = document.location.href.concat(this.clientIdTarget.value);
+    }
 }

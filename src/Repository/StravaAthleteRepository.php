@@ -24,22 +24,7 @@ class StravaAthleteRepository extends ServiceEntityRepository
         parent::__construct($registry, StravaAthlete::class);
     }
 
-    public function findLatestActivityForAll(): Collection
-    {
-        $athletes = $this->findAll();
-        $response = new ArrayCollection();
-        foreach($athletes as $athlete){
-            //refresh token?
-            if($athlete->getTokenExpiryTime() < new \DateTime()){
-                StravaAPICalls::refreshAuthToken( $athlete, $this->getEntityManager() );
-            }
-            if(!$athlete->getAuthToken()){
-                throw new \Exception("No auth token for athlete");
-            }
-            $response[] = StravaAPICalls::getLatestActivity( $athlete );
-        }
-        return $response;
-    }
+
 
 
 }

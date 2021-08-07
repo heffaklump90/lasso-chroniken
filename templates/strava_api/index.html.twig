@@ -4,18 +4,10 @@
 
 
     <h1>Test strava api calls</h1>
-    <p>
-        <a class="btn btn-primary" href="{{ path('strava_athlete_data') }}">get athlete data</a>
-    </p>
-    <p>
-        <a class="btn btn-primary" href="{{ path('strava_activities_data') }}">get activities data</a>
-    </p>
-    <p>
-        <a class="btn btn-primary" href="{{ path('strava_latest_activity_data') }}">get latest activity data</a>
-    </p>
-    {% if data is defined and app.environment == 'dev' %}
+    {{ form(form) }}
+    {% if stravaData is defined and app.environment == 'dev' %}
         {% if app.environment == 'dev' %}
-            {{ dump(data) }}
+            {{ dump(stravaData) }}
         {% else %}
             data
         {% endif %}
