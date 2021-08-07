@@ -11,8 +11,9 @@ class StravaAPICalls
     private HttpClientInterface $httpClient;
 
     const STRAVA_TOKEN_URI = "https://www.strava.com/api/v3/oauth/token";
-    const STRAVA_ACTIVITIES_URL = "https://www.strava.com/api/v3/athlete/activities";
-    const STRAVA_ATHLETE_URL = "https://www.strava.com/api/v3/athlete";
+    const STRAVA_ACTIVITIES_URI = "https://www.strava.com/api/v3/athlete/activities";
+    const STRAVA_ACTIVITY_URI = "https://www.strava.com/api/v3/activities";
+    const STRAVA_ATHLETE_URI = "https://www.strava.com/api/v3/athlete";
 
     public function __construct(HttpClientInterface $httpClient)
     {
@@ -45,7 +46,7 @@ class StravaAPICalls
 
     public function getActivities(StravaAthlete $stravaAthlete)
     {
-        $response = $this->httpClient->request('GET', self::STRAVA_ACTIVITIES_URL, [
+        $response = $this->httpClient->request('GET', self::STRAVA_ACTIVITIES_URI, [
                 'auth_bearer' => $stravaAthlete->getAuthToken(),
             ]
         );
@@ -54,20 +55,27 @@ class StravaAPICalls
 
     public function getLatestActivity(StravaAthlete $stravaAthlete)
     {
-        $response = $this->httpClient->request('GET', self::STRAVA_ACTIVITIES_URL, [
+        $response = $this->httpClient->request('GET', self::STRAVA_ACTIVITIES_URI, [
                 'auth_bearer' => $stravaAthlete->getAuthToken(),
                 'query' => [
                     'per_page' => 1,
                 ]
             ]
         );
+        $responseObject = json_decode($response->getContent())[0];
+        $response = $this->httpClient->request('GET', self::STRAVA_ACTIVITY_URI . "/" . $responseObject->id, [
+            'auth_bearer' => $stravaAthlete->getAuthToken(),
+            'query' => [
+                'include_all_efforts' => false,
+            ]
+        ]);
 
-        return json_decode($response->getContent())[0];
+        return json_decode($response->getContent());
     }
 
     public function getAthleteData(StravaAthlete $stravaAthlete)
     {
-        $response = $this->httpClient->request( 'GET', self::STRAVA_ATHLETE_URL, [
+        $response = $this->httpClient->request( 'GET', self::STRAVA_ATHLETE_URI, [
                 'auth_bearer' => $stravaAthlete->getAuthToken(),
             ]
         );
