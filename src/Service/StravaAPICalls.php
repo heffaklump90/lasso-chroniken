@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\StravaAthlete;
+use App\Exception\AuthTokenExpiredException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class StravaAPICalls
@@ -29,7 +30,8 @@ class StravaAPICalls
             'grant_type' => 'authorization_code',
         ]]);
 
-        return json_decode( $response->getContent() );
+        $data = json_decode( $response->getContent() );
+        return $data;
     }
 
     public function refreshAuthToken(StravaAthlete $stravaAthlete)
@@ -41,7 +43,8 @@ class StravaAPICalls
                 'refresh_token' => $stravaAthlete->getRefreshToken()
             ]]);
 
-        return json_decode($response->getContent());;
+        $data = json_decode($response->getContent());
+        return $data;
     }
 
     public function getActivities(StravaAthlete $stravaAthlete)
@@ -50,7 +53,11 @@ class StravaAPICalls
                 'auth_bearer' => $stravaAthlete->getAuthToken(),
             ]
         );
-        return json_decode($response->getContent());
+        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+            throw new AuthTokenExpiredException($stravaAthlete);
+        }
+        $data = json_decode($response->getContent());
+        return $data;
     }
 
     public function getLatestActivity(StravaAthlete $stravaAthlete)
@@ -62,15 +69,21 @@ class StravaAPICalls
                 ]
             ]
         );
-        $responseObject = json_decode($response->getContent())[0];
-        $response = $this->httpClient->request('GET', sprintf(self::STRAVA_ACTIVITY_URI, $responseObject->id), [
+        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+            throw new AuthTokenExpiredException($stravaAthlete);
+        }
+        $data = json_decode($response->getContent())[0];
+        $response = $this->httpClient->request('GET', sprintf(self::STRAVA_ACTIVITY_URI, $data->id), [
             'auth_bearer' => $stravaAthlete->getAuthToken(),
             'query' => [
                 'include_all_efforts' => false,
             ]
         ]);
-
-        return json_decode($response->getContent());
+        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+            throw new AuthTokenExpiredException($stravaAthlete);
+        }
+        $data = json_decode($response->getContent());
+        return $data;
     }
 
     public function getAthleteData(StravaAthlete $stravaAthlete)
@@ -80,6 +93,10 @@ class StravaAPICalls
             ]
         );
 
-        return json_decode($response->getContent());
+        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+            throw new AuthTokenExpiredException($stravaAthlete);
+        }
+        $data = json_decode($response->getContent());
+        return $data;
     }
 }

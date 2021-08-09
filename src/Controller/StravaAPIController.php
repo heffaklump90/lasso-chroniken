@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Exception\AuthTokenExpiredException;
 use App\Repository\StravaAthleteRepository;
 use App\Service\StravaDataPersistence;
 use App\Service\StravaAPICalls;
@@ -92,6 +93,7 @@ class StravaAPIController extends AbstractController
             $apiCallName = $form->getClickedButton()->getName();
             $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => $data['clientId']]);
             $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
+
         }
 
         return $this->render('strava_api/index.html.twig', [
