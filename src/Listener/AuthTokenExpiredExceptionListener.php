@@ -12,9 +12,7 @@ class AuthTokenExpiredExceptionListener
     private StravaAPICalls $stravaAPICalls;
     private StravaDataPersistence $stravaDataPersistence;
 
-    public function __construct(StravaAPICalls $stravaAPICalls,
-                                StravaDataPersistence $stravaDataPersistence,
-    )
+    public function __construct(StravaAPICalls $stravaAPICalls, StravaDataPersistence $stravaDataPersistence)
     {
         $this->stravaAPICalls = $stravaAPICalls;
         $this->stravaDataPersistence = $stravaDataPersistence;

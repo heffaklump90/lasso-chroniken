@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\StravaAthlete;
 use App\Exception\AuthTokenExpiredException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class StravaAPICalls
@@ -53,7 +54,7 @@ class StravaAPICalls
                 'auth_bearer' => $stravaAthlete->getAuthToken(),
             ]
         );
-        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+        if( $response->getStatusCode() == Response::HTTP_UNAUTHORIZED ){
             throw new AuthTokenExpiredException($stravaAthlete);
         }
         $data = json_decode($response->getContent());
@@ -69,7 +70,7 @@ class StravaAPICalls
                 ]
             ]
         );
-        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+        if( $response->getStatusCode() == Response::HTTP_UNAUTHORIZED ){
             throw new AuthTokenExpiredException($stravaAthlete);
         }
         $data = json_decode($response->getContent())[0];
@@ -79,7 +80,7 @@ class StravaAPICalls
                 'include_all_efforts' => false,
             ]
         ]);
-        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+        if( $response->getStatusCode() == Response::HTTP_UNAUTHORIZED ){
             throw new AuthTokenExpiredException($stravaAthlete);
         }
         $data = json_decode($response->getContent());
@@ -93,7 +94,7 @@ class StravaAPICalls
             ]
         );
 
-        if( $response->getStatusCode() == 401 || $response->getStatusCode() == 402 ){
+        if( $response->getStatusCode() == Response::HTTP_UNAUTHORIZED ){
             throw new AuthTokenExpiredException($stravaAthlete);
         }
         $data = json_decode($response->getContent());
