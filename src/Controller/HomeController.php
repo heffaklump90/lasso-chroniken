@@ -36,10 +36,6 @@ class HomeController extends AbstractController
 
         $athletes = $this->stravaAthleteRepository->findAll();
         foreach($athletes as $athlete){
-            if($athlete->getTokenExpiryTime() < new \DateTime('now')){
-                $tokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
-                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $tokenData);
-            }
             $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
             $this->stravaDataPersistence->saveLatestActivityData($athlete, $latestActivity);
 
