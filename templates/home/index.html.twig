@@ -14,8 +14,13 @@
         <h2>Die neuesten Strava-Einträge</h2>
         <p>
             <ul>
-            {% for athlete in athletes %}
-                <li><a href="https://www.strava.com/activities/{{ athlete.latestActivityId }}"><img src="{{ athlete.profileMedium }}">{{ athlete.name }}: {{ athlete.latestActivityName }}</a></li>
+            {% for athleteView in athleteViewData %}
+                <li><a href="{{ athleteView['latest_activity_uri'] }}"><img src="{{ athleteView['profile_picture'] }}">{{ athleteView['name'] }}: {{ athleteView['latest_activity_name'] }}</a>
+                {% if athleteView['photo'] | length > 0 %}
+                    <img src="{{ athleteView['photo'] }}">
+                {% endif %}
+                </li>
+
             {% endfor %}
             </ul>
         </p>

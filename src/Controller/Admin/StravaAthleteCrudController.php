@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
@@ -35,9 +36,7 @@ class StravaAthleteCrudController extends AbstractCrudController
             TextField::new('clientSecret')->onlyOnForms(),
             TextField::new('name')
                 ->setFormTypeOption('disabled', true),
-            NumberField::new('latestActivityId')->onlyOnForms()
-                ->setFormTypeOption('disabled', true),
-            TextField::new('latestActivityName')->onlyOnForms()
+            TextareaField::new('latestActivityData')->onlyOnForms()
                 ->setFormTypeOption('disabled', true),
             TextField::new('authorizationCode')->onlyOnForms()
                 ->setFormTypeOption('disabled', true),

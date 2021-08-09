@@ -53,16 +53,6 @@ class StravaAthlete
     private $name;
 
     /**
-     * @ORM\Column(type="bigint", nullable=true)
-     */
-    private $latestActivityId;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $latestActivityName;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $profileMedium;
@@ -71,6 +61,11 @@ class StravaAthlete
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $profile;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $latestActivityData;
 
     public function getId(): ?int
     {
@@ -161,30 +156,6 @@ class StravaAthlete
         return $this;
     }
 
-    public function getLatestActivityId(): ?int
-    {
-        return $this->latestActivityId;
-    }
-
-    public function setLatestActivityId(?int $latestActivityId): self
-    {
-        $this->latestActivityId = $latestActivityId;
-
-        return $this;
-    }
-
-    public function getLatestActivityName(): ?string
-    {
-        return $this->latestActivityName;
-    }
-
-    public function setLatestActivityName(?string $latestActivityName): self
-    {
-        $this->latestActivityName = $latestActivityName;
-
-        return $this;
-    }
-
     public function getProfileMedium(): ?string
     {
         return $this->profileMedium;
@@ -205,6 +176,18 @@ class StravaAthlete
     public function setProfile(?string $profile): self
     {
         $this->profile = $profile;
+
+        return $this;
+    }
+
+    public function getLatestActivityData(): ?string
+    {
+        return $this->latestActivityData;
+    }
+
+    public function setLatestActivityData(?string $latestActivityData): self
+    {
+        $this->latestActivityData = $latestActivityData;
 
         return $this;
     }

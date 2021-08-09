@@ -34,8 +34,7 @@ class StravaDataPersistence
 
     public function saveLatestActivityData(StravaAthlete $stravaAthlete, $latestActivityData)
     {
-        $stravaAthlete->setLatestActivityId($latestActivityData->id);
-        $stravaAthlete->setLatestActivityName($latestActivityData->name);
+        $stravaAthlete->setLatestActivityData(json_encode($latestActivityData));
         $this->entityManager->persist($stravaAthlete);
         $this->entityManager->flush();
     }

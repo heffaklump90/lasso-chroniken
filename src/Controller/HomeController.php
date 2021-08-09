@@ -33,18 +33,31 @@ class HomeController extends AbstractController
     public function index(): Response
     {
         $articles = $this->articleRepo->findAll();
-
         $athletes = $this->stravaAthleteRepository->findAll();
+        $athleteViewData = array();
         foreach($athletes as $athlete){
             $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
             $this->stravaDataPersistence->saveLatestActivityData($athlete, $latestActivity);
 
             $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
             $this->stravaDataPersistence->saveAthleteData($athlete, $athleteData);
+
+            $photo = "";
+            if($latestActivity->total_photo_count > 0){
+                $photo = $latestActivity->photos->primary->urls->{100};
+            }
+
+            $athleteViewData[] = [
+                'name' => $athlete->getName(),
+                'latest_activity_name' => $latestActivity->name,
+                'latest_activity_uri' => sprintf("https://www.strava.com/activities/%d", $latestActivity->id),
+                'profile_picture' => $athlete->getProfileMedium(),
+                'photo' => $photo,
+            ];
         }
 
         return $this->render('home/index.html.twig', [
-            'athletes' => $athletes,
+            'athleteViewData' => $athleteViewData,
             'articles' => $articles,
         ]);
     }
