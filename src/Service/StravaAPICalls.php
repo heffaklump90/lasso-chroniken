@@ -12,7 +12,7 @@ class StravaAPICalls
 
     const STRAVA_TOKEN_URI = "https://www.strava.com/api/v3/oauth/token";
     const STRAVA_ACTIVITIES_URI = "https://www.strava.com/api/v3/athlete/activities";
-    const STRAVA_ACTIVITY_URI = "https://www.strava.com/api/v3/activities";
+    const STRAVA_ACTIVITY_URI = "https://www.strava.com/api/v3/activities/%d";
     const STRAVA_ATHLETE_URI = "https://www.strava.com/api/v3/athlete";
 
     public function __construct(HttpClientInterface $httpClient)
@@ -63,7 +63,7 @@ class StravaAPICalls
             ]
         );
         $responseObject = json_decode($response->getContent())[0];
-        $response = $this->httpClient->request('GET', self::STRAVA_ACTIVITY_URI . "/" . $responseObject->id, [
+        $response = $this->httpClient->request('GET', sprintf(self::STRAVA_ACTIVITY_URI, $responseObject->id), [
             'auth_bearer' => $stravaAthlete->getAuthToken(),
             'query' => [
                 'include_all_efforts' => false,
