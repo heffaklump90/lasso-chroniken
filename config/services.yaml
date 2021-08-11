@@ -44,7 +44,3 @@ services:
     App\Listener\RedirectExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
-
-    App\Listener\AuthTokenExpiredExceptionListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.exception }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Exception\AuthTokenExpiredException;
 use App\Repository\ArticleRepository;
 use App\Repository\StravaAthleteRepository;
 use App\Service\StravaDataPersistence;
@@ -12,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    private $articleRepo;
+    private ArticleRepository $articleRepo;
     private StravaAthleteRepository $stravaAthleteRepository;
     private StravaDataPersistence $stravaDataPersistence;
     private StravaAPICalls $stravaAPICalls;
@@ -36,10 +37,24 @@ class HomeController extends AbstractController
         $athletes = $this->stravaAthleteRepository->findAll();
         $athleteViewData = array();
         foreach($athletes as $athlete){
-            $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
+            try {
+                $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
+            } catch (AuthTokenExpiredException $authTokenExpiredException) {
+                $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
+                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+            } finally {
+                $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
+            }
             $this->stravaDataPersistence->saveLatestActivityData($athlete, $latestActivity);
 
-            $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
+            try {
+                $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
+            } catch (AuthTokenExpiredException $authTokenExpiredException) {
+                $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
+                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+            } finally {
+                $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
+            }
             $this->stravaDataPersistence->saveAthleteData($athlete, $athleteData);
 
             $photo = "";

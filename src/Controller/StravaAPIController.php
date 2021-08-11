@@ -23,6 +23,7 @@ class StravaAPIController extends AbstractController
     private StravaAthleteRepository $stravaAthleteRepository;
     private StravaDataPersistence $stravaDataPersistence;
     private StravaAPICalls $stravaAPICalls;
+    private static $flag = 0;
 
     public function __construct(LoggerInterface $logger,
                                 StravaAthleteRepository $stravaAthleteRepository,
@@ -92,8 +93,14 @@ class StravaAPIController extends AbstractController
             $data = $form->getData();
             $apiCallName = $form->getClickedButton()->getName();
             $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => $data['clientId']]);
-            $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
-
+            try {
+                $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
+            } catch (AuthTokenExpiredException $exception){
+                $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
+                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+            } finally {
+                $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
+            }
         }
 
         return $this->render('strava_api/index.html.twig', [
