@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,6 @@ class StravaAPIController extends AbstractController
     private StravaAthleteRepository $stravaAthleteRepository;
     private StravaDataPersistence $stravaDataPersistence;
     private StravaAPICalls $stravaAPICalls;
-    private static $flag = 0;
 
     public function __construct(LoggerInterface $logger,
                                 StravaAthleteRepository $stravaAthleteRepository,
@@ -95,9 +95,11 @@ class StravaAPIController extends AbstractController
             $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => $data['clientId']]);
             try {
                 $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
-            } catch (AuthTokenExpiredException $exception){
-                $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
-                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+            } catch (ClientException $exception){
+                if($exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
+                    $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
+                    $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+                }
             } finally {
                 $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
             }

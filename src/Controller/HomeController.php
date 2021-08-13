@@ -8,6 +8,7 @@ use App\Repository\StravaAthleteRepository;
 use App\Service\StravaDataPersistence;
 use App\Service\StravaAPICalls;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -39,9 +40,11 @@ class HomeController extends AbstractController
         foreach($athletes as $athlete){
             try {
                 $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
-            } catch (AuthTokenExpiredException $authTokenExpiredException) {
-                $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
-                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+            } catch (ClientException $exception) {
+                if( $exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
+                    $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
+                    $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+                }
             } finally {
                 $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
             }
@@ -49,23 +52,25 @@ class HomeController extends AbstractController
 
             try {
                 $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
-            } catch (AuthTokenExpiredException $authTokenExpiredException) {
-                $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
-                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+            } catch (ClientException $exception) {
+                if( $exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
+                    $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
+                    $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+                }
             } finally {
                 $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
             }
             $this->stravaDataPersistence->saveAthleteData($athlete, $athleteData);
 
             $photo = "";
-            if($latestActivity->total_photo_count > 0){
+            if( $latestActivity->total_photo_count > 0 ){
                 $photo = $latestActivity->photos->primary->urls->{100};
             }
 
             $athleteViewData[] = [
                 'name' => $athlete->getName(),
                 'latest_activity_name' => $latestActivity->name,
-                'latest_activity_uri' => sprintf("https://www.strava.com/activities/%d", $latestActivity->id),
+                'latest_activity_uri' => sprintf(StravaAPICalls::STRAVA_WEB_ACTIVITY_URI, $latestActivity->id),
                 'profile_picture' => $athlete->getProfileMedium(),
                 'photo' => $photo,
             ];
