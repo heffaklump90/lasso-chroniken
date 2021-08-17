@@ -8,6 +8,13 @@
     {% if stravaData is defined and app.environment == 'dev' %}
         {% if app.environment == 'dev' %}
             {{ dump(stravaData) }}
+            {% if latestActivity %}
+                <div data-controller="googlemap"
+                 data-googlemap-summary-polyline-value="{{ stravaData.map.summary_polyline }}">
+
+                    <div id="map" class="googlemap"></div>
+                </div>
+            {% endif %}
         {% else %}
             data
         {% endif %}

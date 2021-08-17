@@ -19,5 +19,8 @@
         "watch": "encore dev --watch",
         "build": "encore production --progress"
     },
-    "dependencies": {}
+    "dependencies": {
+        "@googlemaps/js-api-loader": "^1.12.1",
+        "@googlemaps/polyline-codec": "^1.0.1"
+    }
 }

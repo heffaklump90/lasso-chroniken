@@ -89,9 +89,13 @@ class StravaAPIController extends AbstractController
 
         $stravaData = array();
 
+        $latestActivity = false;
         if($form->isSubmitted() && $form->isValid()){
             $data = $form->getData();
             $apiCallName = $form->getClickedButton()->getName();
+            if(0 === strcmp( $apiCallName, "getLatestActivity" )){
+                $latestActivity = true;
+            }
             $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => $data['clientId']]);
             try {
                 $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
@@ -99,8 +103,9 @@ class StravaAPIController extends AbstractController
                 if($exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
                     $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
                     $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+                } else {
+                    throw $exception;
                 }
-            } finally {
                 $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
             }
         }
@@ -109,6 +114,7 @@ class StravaAPIController extends AbstractController
             'form' => $form->createView(),
             'stravaData' => $stravaData,
             'athletes' => $athletes,
+            'latestActivity' => $latestActivity,
         ]);
     }
 

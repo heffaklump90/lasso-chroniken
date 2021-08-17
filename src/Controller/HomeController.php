@@ -44,9 +44,10 @@ class HomeController extends AbstractController
                 if( $exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
                     $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
                     $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+                    $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
+                } else {
+                    throw $exception;
                 }
-            } finally {
-                $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
             }
             $this->stravaDataPersistence->saveLatestActivityData($athlete, $latestActivity);
 
@@ -56,12 +57,13 @@ class HomeController extends AbstractController
                 if( $exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
                     $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
                     $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+                    $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
+                } else {
+                    throw $exception;
                 }
-            } finally {
-                $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
             }
             $this->stravaDataPersistence->saveAthleteData($athlete, $athleteData);
-
+@
             $photo = "";
             if( $latestActivity->total_photo_count > 0 ){
                 $photo = $latestActivity->photos->primary->urls->{100};
