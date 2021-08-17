@@ -12,7 +12,10 @@ import { encode, decode } from '@googlemaps/polyline-codec';
  * Delete this file or adapt it for your use!
  */
 export default class extends Controller {
-    static values = { summaryPolyline: String }
+    static values = {
+        summaryPolyline: String,
+        polyline: String
+    }
 
     initialize(){
         let map;
@@ -28,7 +31,6 @@ export default class extends Controller {
             for(const tuple of _path){
                 coordinates.push( new google.maps.LatLng(tuple[0], tuple[1]));
             }
-            console.log("polyline: ".concat(this.summaryPolylineValue));
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: coordinates.getAt(0),

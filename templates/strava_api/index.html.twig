@@ -10,7 +10,8 @@
             {{ dump(stravaData) }}
             {% if latestActivity %}
                 <div data-controller="googlemap"
-                 data-googlemap-summary-polyline-value="{{ stravaData.map.summary_polyline }}">
+                     data-googlemap-summary-polyline-value="{{ stravaData.map.summary_polyline }}"
+                     data-googlemap-polyline-value="{{ stravaData.map.polyline }}">
 
                     <div id="map" class="googlemap"></div>
                 </div>
