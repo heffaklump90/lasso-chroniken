@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\StravaAthlete;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -21,6 +22,7 @@ class StravaAPICalls
     const STRAVA_API_ACTIVITIES_URI = "https://www.strava.com/api/v3/athlete/activities";
     const STRAVA_API_ACTIVITY_URI = "https://www.strava.com/api/v3/activities/%d";
     const STRAVA_API_ATHLETE_URI = "https://www.strava.com/api/v3/athlete";
+    const STRAVA_API_LIST_ACTIVITIES_URI = "https://www.strava.com/api/v3/athlete/activities";
 
     const STRAVA_WEB_ACTIVITY_URI = "https://www.strava.com/activities/%d";
 
@@ -110,15 +112,7 @@ class StravaAPICalls
         );
 
         $data = json_decode($response->getContent())[0];
-        $response = $this->httpClient->request('GET', sprintf(self::STRAVA_API_ACTIVITY_URI, $data->id), [
-            'auth_bearer' => $stravaAthlete->getAuthToken(),
-            'query' => [
-                'include_all_efforts' => false,
-            ]
-        ]);
-        $response = json_decode($response->getContent());
-        $this->logger->log(LogLevel::INFO, "map polyline: " . $response->map->polyline);
-        return $response;
+        return $this->getActivityDetail($stravaAthlete, $data->id);
     }
 
     /**
@@ -137,6 +131,44 @@ class StravaAPICalls
         );
 
 
+        return json_decode($response->getContent());
+    }
+
+    /**
+     * @param StravaAthlete $stravaAthlete
+     * @return mixed
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getActivityList(StravaAthlete $stravaAthlete)
+    {
+        $response = $this->httpClient->request("GET", self::STRAVA_API_LIST_ACTIVITIES_URI, [
+            'auth_bearer' => $stravaAthlete->getAuthToken(),
+            ]
+        );
+
+        return json_decode($response->getContent());
+    }
+
+    /**
+     * @param StravaAthlete $stravaAthlete
+     * @param int $activityId
+     * @return mixed
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getActivityDetail(StravaAthlete $stravaAthlete, int $activityId)
+    {
+        $response = $this->httpClient->request('GET', sprintf(self::STRAVA_API_ACTIVITY_URI, $activityId), [
+            'auth_bearer' => $stravaAthlete->getAuthToken(),
+            'query' => [
+                'include_all_efforts' => false,
+            ]
+        ]);
         return json_decode($response->getContent());
     }
 }

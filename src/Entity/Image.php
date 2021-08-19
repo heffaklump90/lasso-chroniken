@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use PhpParser\Node\Scalar\String_;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -26,7 +27,7 @@ class Image
     private $file;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $fileName;
 
@@ -37,7 +38,7 @@ class Image
     private $updatedAt;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $fileSize;
 
@@ -48,7 +49,7 @@ class Image
 
     public function __toString()
     {
-        return $this->fileName;
+        return $this->fileName !== null ? $this->fileName : "";
     }
 
     public function getId(): ?int

@@ -36,8 +36,17 @@ class ArticleController extends AbstractController
     public function index(int $id): Response
     {
         $article = $this->articleRepo->find($id);
-        return $this->render('article/index.html.twig', [
-            'article' => $article,
-        ]);
+        $polyLine = null;
+        if($article->hasStravaActivity()){
+            $activityData = json_decode($article->getStravaActivity()->getData());
+            $polyLine['full'] = $activityData->map->polyline;
+            $polyLine['summary'] = $activityData->map->summary_polyline;
+        }
+
+        $templateVars = ['article' => $article];
+        if($polyLine){
+            $templateVars['polyLine'] = $polyLine;
+        }
+        return $this->render('article/index.html.twig', $templateVars);
     }
 }

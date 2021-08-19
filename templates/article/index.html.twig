@@ -10,5 +10,15 @@
                 {{ article.content | raw }}
             </div>
         </div>
+        <div class="col-md-4">
+            {% if polyLine is defined %}
+                <div data-controller="googlemap"
+                     data-googlemap-summary-polyline-value="{{ polyLine['summary'] }}"
+                     data-googlemap-polyline-value="{{ polyLine['full'] }}">
+
+                    <div id="map" class="googlemap"></div>
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

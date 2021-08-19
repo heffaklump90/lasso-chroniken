@@ -31,9 +31,9 @@ class ArticleCrudController extends AbstractCrudController
             TextField::new('title'),
             SlugField::new('slug')->setTargetFieldName('slug')->setFormTypeOption('disabled', 'disabled'),
             TextareaField::new('content')->setFormType(CKEditorType::class),
+            AssociationField::new('stravaActivity', 'Laufbericht'),
             AssociationField::new('author'),
-            DateTimeField::new('publishAt'),
-            AssociationField::new('images'),
+            DateTimeField::new('publishAt')->setFormat("Y-MM-dd HH:mm")->renderAsNativeWidget(),
         ];
     }
 

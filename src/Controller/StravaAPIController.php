@@ -2,11 +2,9 @@
 
 namespace App\Controller;
 
-use App\Exception\AuthTokenExpiredException;
 use App\Repository\StravaAthleteRepository;
 use App\Service\StravaDataPersistence;
 use App\Service\StravaAPICalls;
-use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -20,17 +18,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class StravaAPIController extends AbstractController
 {
 
-    private $logger;
     private StravaAthleteRepository $stravaAthleteRepository;
     private StravaDataPersistence $stravaDataPersistence;
     private StravaAPICalls $stravaAPICalls;
 
-    public function __construct(LoggerInterface $logger,
-                                StravaAthleteRepository $stravaAthleteRepository,
+    public function __construct(StravaAthleteRepository $stravaAthleteRepository,
                                 StravaDataPersistence $dataPersistence,
                                 StravaAPICalls $stravaAPICalls)
     {
-        $this->logger = $logger;
         $this->stravaAthleteRepository = $stravaAthleteRepository;
         $this->stravaDataPersistence = $dataPersistence;
         $this->stravaAPICalls = $stravaAPICalls;
@@ -83,6 +78,7 @@ class StravaAPIController extends AbstractController
             ->add('getActivities', SubmitType::class)
             ->add('getLatestActivity', SubmitType::class)
             ->add('getAthleteData', SubmitType::class)
+            ->add('getActivityList', SubmitType::class)
             ->getForm();
 
         $form->handleRequest($request);

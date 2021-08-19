@@ -6,6 +6,7 @@ use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
@@ -40,19 +41,16 @@ class Article
      */
     private $author;
 
-
-
     /**
      * @ORM\Column(type="datetime")
      */
     private $publishAt;
 
-
-
     /**
-     * @ORM\ManyToMany(targetEntity=Image::class)
+     * @ORM\ManyToOne(targetEntity=StravaActivity::class, inversedBy="articles")
      */
-    private $images;
+    private $stravaActivity;
+
 
     public function __construct()
     {
@@ -112,8 +110,6 @@ class Article
         return $this;
     }
 
-
-
     public function getPublishAt(): ?\DateTimeInterface
     {
         return $this->publishAt;
@@ -126,29 +122,21 @@ class Article
         return $this;
     }
 
-
-
-    /**
-     * @return Collection|Image[]
-     */
-    public function getImages(): Collection
+    public function hasStravaActivity(): bool
     {
-        return $this->images;
+        return $this->stravaActivity != null ? true : false;
     }
 
-    public function addImage(Image $image): self
+    public function getStravaActivity(): ?StravaActivity
     {
-        if (!$this->images->contains($image)) {
-            $this->images[] = $image;
-        }
+        return $this->stravaActivity;
+    }
+
+    public function setStravaActivity(?StravaActivity $stravaActivity): self
+    {
+        $this->stravaActivity = $stravaActivity;
 
         return $this;
     }
 
-    public function removeImage(Image $image): self
-    {
-        $this->images->removeElement($image);
-
-        return $this;
-    }
 }

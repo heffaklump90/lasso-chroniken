@@ -82,6 +82,11 @@ class User implements UserInterface
      */
     private $updatedAt;
 
+    /**
+     * @ORM\OneToOne(targetEntity=StravaAthlete::class, inversedBy="user", cascade={"persist", "remove"})
+     */
+    private $stravaAthlete;
+
 
 
     public function getUserImageFile(): ?File
@@ -300,6 +305,18 @@ class User implements UserInterface
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getStravaAthlete(): ?StravaAthlete
+    {
+        return $this->stravaAthlete;
+    }
+
+    public function setStravaAthlete(?StravaAthlete $stravaAthlete): self
+    {
+        $this->stravaAthlete = $stravaAthlete;
 
         return $this;
     }

@@ -6,6 +6,7 @@ use App\Entity\Image;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
@@ -28,6 +29,7 @@ class UserCrudController extends AbstractCrudController
             TextField::new('email'),
             TextField::new('firstName'),
             TextField::new('lastName'),
+            AssociationField::new('stravaAthlete')->onlyOnForms(),
             CollectionField::new('roles'),
             BooleanField::new('isVerified'),
         ];
