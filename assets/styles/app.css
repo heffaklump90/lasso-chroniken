@@ -1,7 +1,18 @@
 body {
-    background-color: #d9d9d9;
+    background-color: #fefdef;
+    padding: 0.5rem;
+    margin: 1rem;
+}
+
+.sitebanner {
+    font-size: 4rem;
+}
+
+a {
+    color: #272727;
 }
 
 div.googlemap {
-    height: 480px;
+    min-height: 480px;
 }
+

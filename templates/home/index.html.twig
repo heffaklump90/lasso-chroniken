@@ -8,14 +8,14 @@
         <h2>Die neuesten Artikeln</h2>
         <p>
         {% for article in articles %}
-            <a href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a><br/>
+            <a class="text-decoration-none" href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a><br/>
         {% endfor %}
         </p>
         <h2>Letzte Aktivitäten</h2>
         <p>
-            <ul>
+            <ul class="list-unstyled">
             {% for athleteView in athleteViewData %}
-                <li><a href="{{ athleteView['latest_activity_uri'] }}"><img src="{{ athleteView['profile_picture'] }}">{{ athleteView['name'] }}: {{ athleteView['latest_activity_name'] }}</a>
+                <li><a class="text-decoration-none" href="{{ athleteView['latest_activity_uri'] }}"><img class="pe-3" src="{{ athleteView['profile_picture'] }}">{{ athleteView['name'] }}: {{ athleteView['latest_activity_name'] }}</a>
                 {% if athleteView['photo'] | length > 0 %}
                     <img src="{{ athleteView['photo'] }}">
                 {% endif %}
@@ -26,7 +26,6 @@
         </p>
     </div>
     <div class="col-md-8">
-        <h1>Die Lasso-Chroniken</h1>
         <h2>Nicht für das Leben üben wir...</h2>
         <h3>...für die Disziplin</h3>
         <p>Wer auch jemals Motivationsprobleme hatte, am Wochenende in der frühen Morgensonne (oder Morgenschwärze im Winter)
