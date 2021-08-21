@@ -34,14 +34,28 @@ class HomeController extends AbstractController
      */
     public function index(): Response
     {
-        $articles = $this->articleRepo->findAll();
+        $articles = $this->articleRepo->findPlainArticles();
+
+        $raceArticles = $this->articleRepo->findRaceArticles();
+
+        $athleteViewData = $this->getAthleteViewData();
+
+        return $this->render('home/index.html.twig', [
+            'athleteViewData' => $athleteViewData,
+            'raceArticles' => $raceArticles,
+            'articles' => $articles,
+        ]);
+    }
+
+    public function getAthleteViewData()
+    {
         $athletes = $this->stravaAthleteRepository->findAll();
         $athleteViewData = array();
-        foreach($athletes as $athlete){
+        foreach($athletes as $athlete) {
             try {
                 $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
             } catch (ClientException $exception) {
-                if( $exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
+                if ($exception->getCode() == Response::HTTP_UNAUTHORIZED) {
                     $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
                     $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
                     $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
@@ -54,7 +68,7 @@ class HomeController extends AbstractController
             try {
                 $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
             } catch (ClientException $exception) {
-                if( $exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
+                if ($exception->getCode() == Response::HTTP_UNAUTHORIZED) {
                     $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
                     $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
                     $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
@@ -63,9 +77,9 @@ class HomeController extends AbstractController
                 }
             }
             $this->stravaDataPersistence->saveAthleteData($athlete, $athleteData);
-@
+
             $photo = "";
-            if( $latestActivity->total_photo_count > 0 ){
+            if ($latestActivity->total_photo_count > 0) {
                 $photo = $latestActivity->photos->primary->urls->{100};
             }
 
@@ -77,11 +91,7 @@ class HomeController extends AbstractController
                 'photo' => $photo,
             ];
         }
-
-        return $this->render('home/index.html.twig', [
-            'athleteViewData' => $athleteViewData,
-            'articles' => $articles,
-        ]);
+        return $athleteViewData;
     }
 
 }

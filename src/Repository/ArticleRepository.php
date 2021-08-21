@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,6 +20,23 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
+    public function findRaceArticles()
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.stravaActivity IS NOT NULL')
+            ->orderBy('a.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findPlainArticles()
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.stravaActivity IS NULL')
+            ->orderBy('a.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return Article[] Returns an array of Article objects
     //  */

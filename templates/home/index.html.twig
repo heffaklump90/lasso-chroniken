@@ -5,17 +5,27 @@
 {% block body %}
 <div class="row">
     <div class="col-md-4">
-        <h2>Die neuesten Artikeln</h2>
+        <h2>Laufberichte</h2>
         <p>
-        {% for article in articles %}
-            <a class="text-decoration-none" href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a><br/>
-        {% endfor %}
+            <ul class="list-unstyled">
+            {% for raceArticle in raceArticles %}
+                <li><a class="text-decoration-none" href="{{ path('article', {id: raceArticle.id}) }}">{{ raceArticle.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </p>
+        <h2>Artikel</h2>
+        <p>
+            <ul class="list-unstyled">
+            {% for article in articles %}
+                <li><a class="text-decoration-none" href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a></li>
+            {% endfor %}
+            </ul>
         </p>
         <h2>Letzte Aktivitäten</h2>
         <p>
             <ul class="list-unstyled">
             {% for athleteView in athleteViewData %}
-                <li><a class="text-decoration-none" href="{{ athleteView['latest_activity_uri'] }}"><img class="pe-3" src="{{ athleteView['profile_picture'] }}">{{ athleteView['name'] }}: {{ athleteView['latest_activity_name'] }}</a>
+                <li class="mt-2"><a class="text-decoration-none" href="{{ athleteView['latest_activity_uri'] }}"><img class="pe-3" src="{{ athleteView['profile_picture'] }}">{{ athleteView['name'] }}: {{ athleteView['latest_activity_name'] }}</a>
                 {% if athleteView['photo'] | length > 0 %}
                     <img src="{{ athleteView['photo'] }}">
                 {% endif %}
