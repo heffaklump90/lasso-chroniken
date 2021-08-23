@@ -17,36 +17,64 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @Route("/articles", name="articles")
+     * @Route("/artikel/{slug}", name="articles")
      */
-    public function articles(): Response
+    public function articles(string $slug = ""): Response
     {
-        $articles = $this->articleRepo->findAll();
+
+        $articles = $this->articleRepo->findPlainArticles();
+        $article = $this->articleRepo->findOneBy(['slug' => $slug]);
+        if($article == null){
+            $article = $articles[0];
+        }
         return $this->render(
-            'article/all.html.twig',
+            'article/article.html.twig',
             [
+                'article' => $article,
                 'articles' => $articles,
             ]
         );
     }
 
     /**
-     * @Route("/article/{id}", name="article")
+     * @Route("/laufberichte/{slug}", name="race_reports")
      */
-    public function index(int $id): Response
+    public function raceReports(string $slug = ""): Response
     {
-        $article = $this->articleRepo->find($id);
+        $articles = $this->articleRepo->findRaceArticles();
+        $article = $this->articleRepo->findOneBy(['slug'=> $slug]);
+        if($article == null){
+            $article = $articles[0];
+        }
         $polyLine = null;
         if($article->hasStravaActivity()){
             $activityData = json_decode($article->getStravaActivity()->getData());
+            $polyLine = array();
             $polyLine['full'] = $activityData->map->polyline;
             $polyLine['summary'] = $activityData->map->summary_polyline;
         }
-
-        $templateVars = ['article' => $article];
+        $templateVars = ['article' => $article, 'articles' => $articles];
         if($polyLine){
             $templateVars['polyLine'] = $polyLine;
         }
-        return $this->render('article/index.html.twig', $templateVars);
+        return $this->render(
+            'article/raceReport.html.twig',
+            $templateVars,
+        );
+    }
+
+    /**
+     * @Route("/articlelisting", name="article_listing")
+     */
+    public function articleNavigation(): Response
+    {
+        $articles = $this->articleRepo->findPlainArticles();
+        $raceArticles = $this->articleRepo->findRaceArticles();
+
+        return $this->render('article/listing.html.twig',
+        [
+            'articles' => $articles,
+            'raceArticles' => $raceArticles,
+        ]);
     }
 }

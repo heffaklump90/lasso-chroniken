@@ -13,7 +13,7 @@ class ArticleEventListener
     public function prePersist(Article $article, LifecycleEventArgs $args): void
     {
         $slugger = new AsciiSlugger();
-        $article->setSlug($slugger->slug($article->getTitle()));
+        $article->setSlug(strtolower($slugger->slug($article->getTitle())));
     }
 
 }

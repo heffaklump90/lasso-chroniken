@@ -1,0 +1,16 @@
+<h2>Laufberichte</h2>
+<p>
+<ul class="list-unstyled">
+    {% for raceArticle in raceArticles %}
+        <li><i class="bi bi-pin-map"></i><a class="text-decoration-none ps-1" href="{{ path('race_reports', {slug: raceArticle.slug}) }}">{{ raceArticle.title }}</a></li>
+    {% endfor %}
+</ul>
+</p>
+<h2>Artikel</h2>
+<p>
+<ul class="list-unstyled">
+    {% for article in articles %}
+        <li><i class="bi bi-newspaper"></i><a class="text-decoration-none ps-1" href="{{ path('articles', {slug: article.slug}) }}">{{ article.title }}</a></li>
+    {% endfor %}
+</ul>
+</p>

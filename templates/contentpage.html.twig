@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="row">
+    <div class="col-md-3">
+        {{ render(path('article_listing')) }}
+    </div>
+    <div class="col-md-9">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+{% endblock %}

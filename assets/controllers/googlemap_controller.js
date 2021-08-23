@@ -34,7 +34,7 @@ export default class extends Controller {
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: coordinates.getAt(0),
-                zoom: 12
+                zoom: 11
             });
 
             let runPath = new google.maps.Polyline({

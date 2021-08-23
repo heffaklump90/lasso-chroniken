@@ -2,15 +2,15 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <h2>Alle Artikel</h2>
-            <ul>
+            <ul class="list-unstyled">
                 {% for article in articles %}
-                    <li><a href="{{ path('article', {'id': article.id}) }}">{{ article.title }}</a></li>
+                    <li><i class="bi bi-newspaper"></i><a class="text-decoration-none ms-2" href="{{ path('article', {'id': article.id}) }}">{{ article.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-9">
             <h1>{{ articles[0].title }}</h1>
             <div class="article-content"><p>{{ articles[0].content }}</p></div>
         </div>

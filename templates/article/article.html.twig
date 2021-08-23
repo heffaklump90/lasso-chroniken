@@ -1,0 +1,9 @@
+{% extends 'contentpage.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+    <div class="article-content">
+        {{ article.content | raw }}
+    </div>
+{% endblock %}

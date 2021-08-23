@@ -4,23 +4,8 @@
 
 {% block body %}
 <div class="row">
-    <div class="col-md-4">
-        <h2>Laufberichte</h2>
-        <p>
-            <ul class="list-unstyled">
-            {% for raceArticle in raceArticles %}
-                <li><a class="text-decoration-none" href="{{ path('article', {id: raceArticle.id}) }}">{{ raceArticle.title }}</a></li>
-            {% endfor %}
-            </ul>
-        </p>
-        <h2>Artikel</h2>
-        <p>
-            <ul class="list-unstyled">
-            {% for article in articles %}
-                <li><a class="text-decoration-none" href="{{ path('article', {id: article.id}) }}">{{ article.title }}</a></li>
-            {% endfor %}
-            </ul>
-        </p>
+    <div class="col-md-3">
+        {{ render(path('article_listing')) }}
         <h2>Letzte Aktivitäten</h2>
         <p>
             <ul class="list-unstyled">
@@ -35,7 +20,7 @@
             </ul>
         </p>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-9">
         <h2>Nicht für das Leben üben wir...</h2>
         <h3>...für die Disziplin</h3>
         <p>Wer auch jemals Motivationsprobleme hatte, am Wochenende in der frühen Morgensonne (oder Morgenschwärze im Winter)

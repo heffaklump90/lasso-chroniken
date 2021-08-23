@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>Lasso-Chroniken - {% block title %}Willkommen!{% endblock %}</title>
         {% block stylesheets %}
             {{ encore_entry_link_tags('bootstrap-extensions') }}
             {{ encore_entry_link_tags('app') }}
@@ -33,7 +33,10 @@
                                     <a class="nav-link" href="{{ path('home') }}">Home</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('articles') }}">Articles</a>
+                                    <a class="nav-link" href="{{ path('race_reports') }}">Laufberichte</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('articles') }}">Artikel</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ path('strava_test_api') }}">API - Test</a>
