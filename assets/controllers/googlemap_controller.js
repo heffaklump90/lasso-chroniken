@@ -14,8 +14,14 @@ import { encode, decode } from '@googlemaps/polyline-codec';
 export default class extends Controller {
     static values = {
         summaryPolyline: String,
-        polyline: String
+        polyline: String,
+        zoom: Number,
+        height: String
     }
+
+    static targets = [
+        "mapview",
+    ]
 
     initialize(){
         let map;
@@ -32,14 +38,16 @@ export default class extends Controller {
                 coordinates.push( new google.maps.LatLng(tuple[0], tuple[1]));
             }
 
+            this.mapviewTarget.style = "height: ".concat(this.heightValue);
+
             map = new google.maps.Map(document.getElementById("map"), {
                 center: coordinates.getAt(0),
-                zoom: 11
+                zoom: this.zoomValue
             });
 
             let runPath = new google.maps.Polyline({
                 path: coordinates,
-                strokeColor: "#CC0000",
+                strokeColor: "#AA1010",
                 strokeOpacity: 1.0,
                 strokeWeight: 2
             });

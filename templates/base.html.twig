@@ -20,7 +20,7 @@
 
             </div>
             <div class="row pb-3">
-                <div class="col-md-12">
+                <div class="col-md-12 clearfix">
                     <nav class="navbar bg-dark navbar-expand-lg navbar-dark">
 
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,11 +39,25 @@
                                     <a class="nav-link" href="{{ path('articles') }}">Artikel</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('strava_test_api') }}">API - Test</a>
+                                    <a class="nav-link" href="{{ path('app_register') }}">Registrieren</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_login') }}">Anmelden</a>
+                                </li>
+
+
                             </ul>
                         </div>
                     </nav>
+                    {% if app.request.hasPreviousSession %}
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label }}">
+                                    {{ message | raw }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             {% block body %}{% endblock %}

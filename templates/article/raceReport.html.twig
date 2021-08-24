@@ -5,18 +5,20 @@
 {% block content %}
     <div>
         <div class="row">
-            <div class="col-7">
+            <div class="col-8">
                 <div class="article-content">
                     {{ article.content | raw }}
                 </div>
             </div>
-            <div class="col-5">
+            <div class="col-4">
                 {% if polyLine is defined %}
                     <div data-controller="googlemap"
                          data-googlemap-summary-polyline-value="{{ polyLine['summary'] }}"
-                         data-googlemap-polyline-value="{{ polyLine['full'] }}">
+                         data-googlemap-polyline-value="{{ polyLine['full'] }}"
+                         data-googlemap-zoom-value="11"
+                         data-googlemap-height-value="240px">
 
-                        <div id="map" class="googlemap"></div>
+                        <div id="map" data-googlemap-target="mapview"></div>
                     </div>
                 {% endif %}
             </div>
