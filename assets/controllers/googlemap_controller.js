@@ -32,8 +32,19 @@ export default class extends Controller {
         });
         loader.load().then(() => {
 
-            let _path = decode(this.summaryPolylineValue, 5);
-            let coordinates = new google.maps.MVCArray();
+            const _path = decode(this.summaryPolylineValue, 5);
+
+            const xArray = _path.map(function(x){
+                return x[0];
+            });
+            const yArray = _path.map(function(x){
+                return x[1];
+            });
+            const middleX = (Math.max(...xArray) + Math.min(...xArray)) / 2;
+            const middleY = (Math.max(...yArray) + Math.min(...yArray)) / 2;
+            const middle = new google.maps.LatLng(middleX, middleY);
+
+            const coordinates = new google.maps.MVCArray();
             for(const tuple of _path){
                 coordinates.push( new google.maps.LatLng(tuple[0], tuple[1]));
             }
@@ -41,7 +52,7 @@ export default class extends Controller {
             this.mapviewTarget.style = "height: ".concat(this.heightValue);
 
             map = new google.maps.Map(document.getElementById("map"), {
-                center: coordinates.getAt(0),
+                center: middle,
                 zoom: this.zoomValue
             });
 
