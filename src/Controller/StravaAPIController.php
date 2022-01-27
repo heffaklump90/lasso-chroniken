@@ -94,7 +94,7 @@ class StravaAPIController extends AbstractController
                 $latestActivity = true;
             }
             $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => $data['clientId']]);
-            $stravaData = $this->stravaAPICalls->executeStravaCall($apiCallName, $athlete);
+            $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
         }
 
         return $this->render('strava_api/index.html.twig', [

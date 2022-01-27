@@ -52,10 +52,10 @@ class HomeController extends AbstractController
         $athletes = $this->stravaAthleteRepository->findAll();
         $athleteViewData = array();
         foreach($athletes as $athlete) {
-            $latestActivity = $this->stravaAPICalls->executeStravaCall('getLatestActivity', $athlete);
+            $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
             $this->stravaDataPersistence->saveLatestActivityData($athlete, $latestActivity);
 
-            $athleteData = $this->stravaAPICalls->executeStravaCall('getAthleteData', $athlete);
+            $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
             $this->stravaDataPersistence->saveAthleteData($athlete, $athleteData);
 
             $photo = "";

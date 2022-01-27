@@ -37,19 +37,14 @@ class StravaActivityCrudController extends AbstractCrudController
 
         $user = $this->getUser();
         $athlete = $user->getStravaAthlete();
-        try {
+        if(null !== $athlete) {
             $activities = $this->stravaAPICalls->getActivities($athlete);
-        } catch (ClientException $exception) {
-            if($exception->getCode() == Response::HTTP_UNAUTHORIZED){
-                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $this->stravaAPICalls->refreshAuthToken($athlete));
-                $activities = $this->stravaAPICalls->getActivities($athlete);
-            }
-        }
-        $choices = array_map(fn($activity): array => [ $activity->name => $activity->id ], $activities);
-        yield ChoiceField::new('stravaId')
-            ->onlyWhenCreating()
-            ->setChoices($choices);
+            $choices = array_map(fn($activity): array => [$activity->name => $activity->id], $activities);
 
+            yield ChoiceField::new('stravaId')
+                ->onlyWhenCreating()
+                ->setChoices($choices);
+        }
         yield TextareaField::new('data')->onlyOnForms()
             ->setFormTypeOption('disabled', 'disabled');
     }
@@ -58,14 +53,7 @@ class StravaActivityCrudController extends AbstractCrudController
     {
         $user = $this->getUser();
         $athlete = $user->getStravaAthlete();
-        try {
-            $detailedData = $this->stravaAPICalls->getActivityDetail($athlete, $entityInstance->getStravaId());
-        } catch (ClientException $exception)  {
-            if($exception->getCode() == Response::HTTP_UNAUTHORIZED){
-                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $this->stravaAPICalls->refreshAuthToken($athlete));
-                $detailedData = $this->stravaAPICalls->getActivityDetail($athlete, $entityInstance->getStravaId());
-            }
-        }
+        $detailedData = $this->stravaAPICalls->getActivityDetail($athlete, $entityInstance->getStravaId());
         $entityInstance->setData(json_encode($detailedData));
         $entityManager->flush();
         parent::persistEntity($entityManager, $entityInstance);

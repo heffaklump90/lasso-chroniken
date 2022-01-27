@@ -4,8 +4,6 @@ namespace App\Service;
 
 use App\Entity\StravaAthlete;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
-use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -89,12 +87,10 @@ class StravaAPICalls
      */
     public function getActivities(StravaAthlete $stravaAthlete)
     {
-        $response = $this->httpClient->request('GET', self::STRAVA_API_ACTIVITIES_URI, [
-                'auth_bearer' => $stravaAthlete->getAuthToken(),
-            ]
-        );
-
-        return json_decode($response->getContent());
+        $parameters = [
+            'auth_bearer' => $stravaAthlete->getAuthToken(),
+        ];
+        return $this->_executeStravaCall( self::STRAVA_API_ACTIVITIES_URI, $parameters);
     }
 
     /**
@@ -107,15 +103,13 @@ class StravaAPICalls
      */
     public function getLatestActivity(StravaAthlete $stravaAthlete)
     {
-        $response = $this->httpClient->request('GET', self::STRAVA_API_ACTIVITIES_URI, [
-                'auth_bearer' => $stravaAthlete->getAuthToken(),
-                'query' => [
-                    'per_page' => 1,
-                ]
+        $parameters = [
+            'auth_bearer' => $stravaAthlete->getAuthToken(),
+            'query' => [
+                'per_page' => 1,
             ]
-        );
-
-        $data = json_decode($response->getContent())[0];
+        ];
+        $data = $this->_executeStravaCall( self::STRAVA_API_ACTIVITIES_URI, $parameters)[0];
         return $this->getActivityDetail($stravaAthlete, $data->id);
     }
 
@@ -129,13 +123,10 @@ class StravaAPICalls
      */
     public function getAthleteData(StravaAthlete $stravaAthlete)
     {
-        $response = $this->httpClient->request( 'GET', self::STRAVA_API_ATHLETE_URI, [
-                'auth_bearer' => $stravaAthlete->getAuthToken(),
-            ]
-        );
-
-
-        return json_decode($response->getContent());
+        $parameters =  [
+            'auth_bearer' => $stravaAthlete->getAuthToken(),
+        ];
+        return $this->_executeStravaCall( self::STRAVA_API_ATHLETE_URI, $parameters);
     }
 
     /**
@@ -148,12 +139,8 @@ class StravaAPICalls
      */
     public function getActivityList(StravaAthlete $stravaAthlete)
     {
-        $response = $this->httpClient->request("GET", self::STRAVA_API_LIST_ACTIVITIES_URI, [
-            'auth_bearer' => $stravaAthlete->getAuthToken(),
-            ]
-        );
-
-        return json_decode($response->getContent());
+        $parameters = ['auth_bearer' => $stravaAthlete->getAuthToken()];
+        return $this->_executeStravaCall(self::STRAVA_API_LIST_ACTIVITIES_URI, $parameters);
     }
 
     /**
@@ -167,28 +154,21 @@ class StravaAPICalls
      */
     public function getActivityDetail(StravaAthlete $stravaAthlete, int $activityId)
     {
-        $response = $this->httpClient->request('GET', sprintf(self::STRAVA_API_ACTIVITY_URI, $activityId), [
+        $requestUri = sprintf(self::STRAVA_API_ACTIVITY_URI, $activityId);
+        $parameters = [
             'auth_bearer' => $stravaAthlete->getAuthToken(),
             'query' => [
                 'include_all_efforts' => false,
             ]
-        ]);
-        return json_decode($response->getContent());
+        ];
+        return $this->_executeStravaCall($requestUri, $parameters);
     }
 
-    /**
-     * @param $apiCallName
-     * @param \App\Entity\StravaAthlete|null $athlete
-     * @return mixed
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
-    public function executeStravaCall($apiCallName, StravaAthlete $athlete)
+
+    private function _executeStravaCall($request, $parameters)
     {
         try {
-            $stravaData = $this->$apiCallName($athlete);
+            $response = $this->httpClient->request("GET", $request, $parameters);
         } catch (ClientException $exception) {
             if ($exception->getCode() == Response::HTTP_UNAUTHORIZED) {
                 $refreshTokenData = $this->refreshAuthToken($athlete);
@@ -196,8 +176,8 @@ class StravaAPICalls
             } else {
                 throw $exception;
             }
-            $stravaData = $this->$apiCallName($athlete);
+            $response = $this->httpClient->request("GET", $request, $parameters);
         }
-        return $stravaData;
+        return json_decode($response->getContent());
     }
 }

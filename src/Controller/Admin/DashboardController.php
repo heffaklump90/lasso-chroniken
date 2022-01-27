@@ -7,6 +7,8 @@ use App\Entity\StravaActivity;
 use App\Entity\StravaAthlete;
 use App\Entity\User;
 use App\Entity\Image;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -38,5 +40,18 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Image', 'fas fa-list', Image::class);
         yield MenuItem::linkToCrud('StravaAthlete', 'fas fa-list', StravaAthlete::class);
         yield MenuItem::linkToCrud('StravaActivity', 'fas fa-list', StravaActivity::class);
+    }
+
+    public function configureCrud(): Crud
+    {
+        return parent::configureCrud()
+            ->addFormTheme('@VichUploader/Form/fields.html.twig')
+            ->addFormTheme('@FOSCKEditor/Form/ckeditor_widget.html.twig');
+    }
+
+    public function configureAssets(): Assets
+    {
+        return parent::configureAssets()
+            ->addJsFile('bundles/fosckeditor/ckeditor.js');
     }
 }
