@@ -11,9 +11,11 @@
             {% if latestActivity %}
                 <div data-controller="googlemap"
                      data-googlemap-summary-polyline-value="{{ stravaData.map.summary_polyline }}"
-                     data-googlemap-polyline-value="{{ stravaData.map.polyline }}">
+                     data-googlemap-polyline-value="{{ stravaData.map.polyline }}"
+                     data-googlemap-zoom-value="12"
+                     data-googlemap-height-value="480px">
 
-                    <div id="map" class="googlemap"></div>
+                    <div id="map" data-googlemap-target="mapview"></div>
                 </div>
             {% endif %}
         {% else %}

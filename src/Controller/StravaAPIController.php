@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\StravaAthlete;
 use App\Repository\StravaAthleteRepository;
 use App\Service\StravaDataPersistence;
 use App\Service\StravaAPICalls;
@@ -93,17 +94,7 @@ class StravaAPIController extends AbstractController
                 $latestActivity = true;
             }
             $athlete = $this->stravaAthleteRepository->findOneBy(['clientId' => $data['clientId']]);
-            try {
-                $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
-            } catch (ClientException $exception){
-                if($exception->getCode() == Response::HTTP_UNAUTHORIZED ) {
-                    $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
-                    $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
-                } else {
-                    throw $exception;
-                }
-                $stravaData = $this->stravaAPICalls->$apiCallName($athlete);
-            }
+            $stravaData = $this->stravaAPICalls->executeStravaCall($apiCallName, $athlete);
         }
 
         return $this->render('strava_api/index.html.twig', [
@@ -131,10 +122,6 @@ class StravaAPIController extends AbstractController
             'data' => $data,
         ]);
     }
-
-
-
-
 
 
 

@@ -40,6 +40,7 @@ class AppFixtures extends Fixture
         $article->setTitle("Erster Artikel");
         $article->setSlug("artikel-1");
         $article->setContent("<p>so, dass ist was</p>");
+        $article->setPublishAt(new \DateTimeImmutable('now'));
         $manager->persist($article);
 
         $manager->flush();

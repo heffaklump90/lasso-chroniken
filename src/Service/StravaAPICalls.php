@@ -6,6 +6,8 @@ use App\Entity\StravaAthlete;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Bundle\MakerBundle\Str;
+use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -16,6 +18,7 @@ class StravaAPICalls
 {
 
     private HttpClientInterface $httpClient;
+    private StravaDataPersistence $stravaDataPersistence;
     private LoggerInterface $logger;
 
     const STRAVA_API_TOKEN_URI = "https://www.strava.com/api/v3/oauth/token";
@@ -29,9 +32,10 @@ class StravaAPICalls
     /**
      * @param HttpClientInterface $httpClient
      */
-    public function __construct(HttpClientInterface $httpClient, LoggerInterface $logger)
+    public function __construct(HttpClientInterface $httpClient, StravaDataPersistence  $stravaDataPersistence, LoggerInterface $logger)
     {
         $this->httpClient = $httpClient;
+        $this->stravaDataPersistence = $stravaDataPersistence;
         $this->logger = $logger;
     }
 
@@ -170,5 +174,30 @@ class StravaAPICalls
             ]
         ]);
         return json_decode($response->getContent());
+    }
+
+    /**
+     * @param $apiCallName
+     * @param \App\Entity\StravaAthlete|null $athlete
+     * @return mixed
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function executeStravaCall($apiCallName, StravaAthlete $athlete)
+    {
+        try {
+            $stravaData = $this->$apiCallName($athlete);
+        } catch (ClientException $exception) {
+            if ($exception->getCode() == Response::HTTP_UNAUTHORIZED) {
+                $refreshTokenData = $this->refreshAuthToken($athlete);
+                $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
+            } else {
+                throw $exception;
+            }
+            $stravaData = $this->$apiCallName($athlete);
+        }
+        return $stravaData;
     }
 }

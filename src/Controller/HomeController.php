@@ -52,30 +52,10 @@ class HomeController extends AbstractController
         $athletes = $this->stravaAthleteRepository->findAll();
         $athleteViewData = array();
         foreach($athletes as $athlete) {
-            try {
-                $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
-            } catch (ClientException $exception) {
-                if ($exception->getCode() == Response::HTTP_UNAUTHORIZED) {
-                    $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
-                    $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
-                    $latestActivity = $this->stravaAPICalls->getLatestActivity($athlete);
-                } else {
-                    throw $exception;
-                }
-            }
+            $latestActivity = $this->stravaAPICalls->executeStravaCall('getLatestActivity', $athlete);
             $this->stravaDataPersistence->saveLatestActivityData($athlete, $latestActivity);
 
-            try {
-                $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
-            } catch (ClientException $exception) {
-                if ($exception->getCode() == Response::HTTP_UNAUTHORIZED) {
-                    $refreshTokenData = $this->stravaAPICalls->refreshAuthToken($athlete);
-                    $this->stravaDataPersistence->saveRefreshTokenData($athlete, $refreshTokenData);
-                    $athleteData = $this->stravaAPICalls->getAthleteData($athlete);
-                } else {
-                    throw $exception;
-                }
-            }
+            $athleteData = $this->stravaAPICalls->executeStravaCall('getAthleteData', $athlete);
             $this->stravaDataPersistence->saveAthleteData($athlete, $athleteData);
 
             $photo = "";

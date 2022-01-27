@@ -9,12 +9,13 @@ runtime:
         - sodium
         - ctype
         - iconv
+        - pdo_mysql
         
 
 #variables:
 #    php:
 #        # uncomment on PHP 7.4+
-#        #opcache.preload: /app/config/preload.php
+        opcache.preload: /app/config/preload.php
 
 build:
     flavor: none
