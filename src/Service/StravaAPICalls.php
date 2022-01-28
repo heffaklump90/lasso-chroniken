@@ -90,7 +90,7 @@ class StravaAPICalls
         $parameters = [
             'auth_bearer' => $stravaAthlete->getAuthToken(),
         ];
-        return $this->_executeStravaCall( self::STRAVA_API_ACTIVITIES_URI, $parameters);
+        return $this->_executeStravaCall( $stravaAthlete, self::STRAVA_API_ACTIVITIES_URI, $parameters);
     }
 
     /**
@@ -109,7 +109,7 @@ class StravaAPICalls
                 'per_page' => 1,
             ]
         ];
-        $data = $this->_executeStravaCall( self::STRAVA_API_ACTIVITIES_URI, $parameters)[0];
+        $data = $this->_executeStravaCall( $stravaAthlete, self::STRAVA_API_ACTIVITIES_URI, $parameters)[0];
         return $this->getActivityDetail($stravaAthlete, $data->id);
     }
 
@@ -126,7 +126,7 @@ class StravaAPICalls
         $parameters =  [
             'auth_bearer' => $stravaAthlete->getAuthToken(),
         ];
-        return $this->_executeStravaCall( self::STRAVA_API_ATHLETE_URI, $parameters);
+        return $this->_executeStravaCall( $stravaAthlete, self::STRAVA_API_ATHLETE_URI, $parameters);
     }
 
     /**
@@ -140,7 +140,7 @@ class StravaAPICalls
     public function getActivityList(StravaAthlete $stravaAthlete)
     {
         $parameters = ['auth_bearer' => $stravaAthlete->getAuthToken()];
-        return $this->_executeStravaCall(self::STRAVA_API_LIST_ACTIVITIES_URI, $parameters);
+        return $this->_executeStravaCall( $stravaAthlete, self::STRAVA_API_LIST_ACTIVITIES_URI, $parameters);
     }
 
     /**
@@ -161,14 +161,15 @@ class StravaAPICalls
                 'include_all_efforts' => false,
             ]
         ];
-        return $this->_executeStravaCall($requestUri, $parameters);
+        return $this->_executeStravaCall($stravaAthlete, $requestUri, $parameters);
     }
 
 
-    private function _executeStravaCall($request, $parameters)
+    private function _executeStravaCall($athlete, $request, $parameters)
     {
         try {
             $response = $this->httpClient->request("GET", $request, $parameters);
+            return json_decode($response->getContent());
         } catch (ClientException $exception) {
             if ($exception->getCode() == Response::HTTP_UNAUTHORIZED) {
                 $refreshTokenData = $this->refreshAuthToken($athlete);
@@ -177,7 +178,7 @@ class StravaAPICalls
                 throw $exception;
             }
             $response = $this->httpClient->request("GET", $request, $parameters);
+            return json_decode($response->getContent());
         }
-        return json_decode($response->getContent());
     }
 }
